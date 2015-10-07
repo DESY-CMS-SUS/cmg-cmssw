@@ -451,7 +451,7 @@ class EventVars1L_base:
         if LT < 250:   isSR = 0
         elif LT < 350: isSR = dPhi > 1.0
         elif LT < 600: isSR = dPhi > 0.75
-        elif LT > 600: isST = dPhi > 0.5
+        elif LT > 600: isSR = dPhi > 0.5
 
         # BLIND data
         if event.isData and nJetC >= 6:
