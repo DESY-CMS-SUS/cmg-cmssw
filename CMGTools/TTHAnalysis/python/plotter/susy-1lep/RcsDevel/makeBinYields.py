@@ -9,7 +9,7 @@ from math import hypot
 #Tdir = "/nfs/dust/cms/group/susy-desy/Run2/ACDV/CMGtuples/MC/SPRING15/Spring15/Links/"
 #FTdir = "/nfs/dust/cms/group/susy-desy/Run2/ACDV/CMGtuples/MC/SPRING15/Spring15/Links/Friends/"
 Tdir = "/nfs/dust/cms/group/susy-desy/Run2/MC/CMGtuples/Spring15_25ns/"
-FTdir = "/nfs/dust/cms/group/susy-desy/Run2/MC/CMGtuples/Spring15_25ns/Friends/"
+FTdir = "/nfs/dust/cms/group/susy-desy/Run2/MC/CMGtuples/Spring15_25ns/FriendsForCards/"
 #FTdir = "FriendTrees_MC/"
 
 #Tdir = "/nfs/dust/cms/group/susy-desy/Run2/ACDV/CMGtuples/Links/Spring15_RunB_50ns/"
@@ -243,6 +243,9 @@ if __name__ == "__main__":
     # make cut list
     cDict = cutDictCR
     cDict.update(cutDictSR)
+    cDict.update(cutDictSRf9)
+    cDict.update(cutDictCRf9)
+
     #cDict = cutQCD #QCD
     #cDict = cutIncl #Inclusive
 

@@ -105,19 +105,26 @@ def getSystDict(cardFnames, region, sig = "", lep = "lep", uncert = "default"):
     return yields
 
 
-def printBinnedTable(yieldsList, yieldsSig, name):
+def printBinnedTable(yieldsList, yieldsSig, printSource, name):
     benchmark = (1200, 300)
+    precision = 2
+    if 'Rcs' in name:
+        precision = 4
     f = open(name + '.tex','w')
     f.write('\\begin{table}[ht] \n ')
     binNames = sorted(yieldsList[0].keys())
     singleSourceNames = []
+    regions = []
+    region = ['MB', 'SB', '$\kappa$']
+    for i,yields in enumerate(yieldsList):
+        if 'Rcs' in name:
+#            singleSourceNames.append(sorted( x for x in yields[binNames[0]].keys() if (('EWK' in x) or ('TT' in x)) ))
+            singleSourceNames.append(sorted( x for x in yields[binNames[0]].keys() if (x in printSource)))
 
-    for yields in yieldsList:
-        singleSourceNames.append(sorted( x for x in yields[binNames[0]].keys() if not('EWK' in x) ))
+        else:
+            singleSourceNames.append(sorted( x for x in yields[binNames[0]].keys() if not('EWK' in x) ))
     SourceNames = singleSourceNames
     singleSourceNames = sum(singleSourceNames, [])
-    print singleSourceNames
-    
 
     nSource = len(singleSourceNames) 
     nCol = nSource + 3
@@ -143,10 +150,10 @@ def printBinnedTable(yieldsList, yieldsSig, name):
             for source in sources:
                 print source, yields[bin][source]
                 if type(source) == str:
-#                    f.write((' & %.2f $\pm$ %.2f') % yields[bin][source])                
-                    f.write((' & %.2f') % yields[bin][source][0])                
+                    f.write((' & %.'+str(precision)+'f $\pm$ %.'+str(precision)+'f') % yields[bin][source])                
+
                 elif type(source) == tuple:
-                    f.write((' & %.2f $\pm$ %.2f') % yieldsSig[bin][source])
+                    f.write((' & %.'+str(precision)+'f $\pm$ %.'+str(precision)+'f') % yieldsSig[bin][source])
         print '--'
         f.write(' \\\ \n')
 
@@ -254,15 +261,36 @@ if __name__ == "__main__":
 
     print 'Using cards from', cardDirName
     inDir = cardDirectory
-    cardFnames = glob.glob(inDir+'/*/*.root')
+    cardFnames = glob.glob(inDir+'/*/*68*.root')
+    cardFnames9 = glob.glob(inDir+'/*/*9i*.root')
     inDirSig = cardDirectorySig
     cardFnamesSig = glob.glob(inDirSig+'/*/*.root')
+
 
     sigYields = getYieldDict(cardFnamesSig,"SR_MB", "T1tttt_Scan", "lep")
     mcYields = getYieldDict(cardFnames,"SR_MB","","lep")
 
 
-    printBinnedTable((mcYields, getYieldDict(cardFnames,"SR_MB","","lep"),getYieldDict(cardFnames,"Rcs_MB","","lep")), sigYields, 'SR_table')
+    printBinnedTable((mcYields,), sigYields, [],'SR_table')
+    dictRcs_MB = getYieldDict(cardFnames,"Rcs_MB","","lep")
+    dictRcs_SB = getYieldDict(cardFnames,"Rcs_SB","","lep")
+    dictKappa = getYieldDict(cardFnames,"Kappa","","lep")
+    tableList = ['EWK','TT','WJets','TTV']
+    for name in tableList:
+        printBinnedTable((dictRcs_MB, dictRcs_SB, dictKappa), sigYields, [name],'Rcs_table_'+name)
+
+
+    sigYields9 = getYieldDict(cardFnamesSig,"SR_MB", "T1tttt_Scan", "lep")
+    mcYields9 = getYieldDict(cardFnames9,"SR_MB","","lep")
+    printBinnedTable((mcYields9,), sigYields9, [],'SR_table_9')
+    dictRcs_MB9 = getYieldDict(cardFnames9,"Rcs_MB","","lep")
+    dictRcs_SB9 = getYieldDict(cardFnames9,"Rcs_SB","","lep")
+    dictKappa9 = getYieldDict(cardFnames9,"Kappa","","lep")
+    tableList = ['EWK','TT','WJets','TTV']
+    for name in tableList:
+        printBinnedTable((dictRcs_MB9, dictRcs_SB9, dictKappa9), sigYields, [name],'Rcs_table_9_'+name)
+
+
 #    printBinnedTable(getYieldDict(cardFnames,"Rcs_MB","","lep") , getYieldDict(cardFnamesSig,"Rcs_MB", "T1tttt_Scan", "lep"), 'RCS_MB_table')
 #    printBinnedTable(getYieldDict(cardFnames,"Rcs_SB","","lep") , getYieldDict(cardFnamesSig,"Rcs_SB", "T1tttt_Scan", "lep"), 'Rcs_SB_table')
 

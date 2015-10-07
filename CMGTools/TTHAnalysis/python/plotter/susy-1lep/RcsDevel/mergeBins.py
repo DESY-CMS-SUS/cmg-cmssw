@@ -24,11 +24,13 @@ def matchSB(bname):
 
     if 'NJ68' in name:
         # match for NJ68
-        name = name.replace('NJ68','NJ45')
+        name = name.replace('NJ68','NJ45f6')
         name = name.replace('NB2_','NB2i_')
         name = name.replace('NB3i','NB2i')
     elif 'NJ9' in name:
         # match for NJ9i
+        name = name.replace('NJ9i','NJ45f9')
+        name = name.replace('NB2_','NB2i_')
         name = name.replace('NB3i_','NB2i_')
 
     name = name[:-1]
@@ -59,14 +61,18 @@ def findMatchBins(binname):
     if '.' in binname:
         binname = binname[:binname.find('.')]
     purebname = binname[:binname.find('_NJ')]
-
+    
     SR_MBname = binname
     CR_MBname = binname.replace('_SR','_CR')
 
     #print 'replace', purebname, 'to', matchSB(purebname)
 
+    if 'NJ68' in binname:
+        njSB = 'NJ45f6'
+    elif 'NJ9i' in binname:
+        njSB = 'NJ45f9'
     SBname = matchSB(binname)# + '_NJ45'
-    SBname = SBname[:SBname.find('_NJ')] + '_NJ45'
+    SBname = SBname[:SBname.find('_NJ')] + '_' + njSB
     SR_SBname = SBname + '_SR'
     CR_SBname = SBname + '_CR'
 
@@ -129,7 +135,7 @@ def writeBins(ofname, srcdir, binnames):
     ofile.Close()
     return 1
 
-def mergeBins(fileList, outdir = None, pattern = 'NJ68'):
+def mergeBins(fileList, pattern = 'NJ68', outdir = None):
 
     # filter out MB_SR files
     srList = [fname for fname in fileList if pattern in fname]
@@ -177,5 +183,6 @@ if __name__ == "__main__":
     fileList = glob.glob(pattern+"*.root")
 
     mergeBins(fileList)
+    mergeBins(fileList,'NJ9i')
 
     print 'Finished'

@@ -29,7 +29,8 @@ binsNB['NB3i'] = 'nBJet >= 3'
 binsNJ = {}
 binsNJ['NJ34'] = '3 <= nJet && nJet <= 4'
 binsNJ['NJ4i'] = '4 <= nJet'
-binsNJ['NJ45'] = '4 <= nJet && nJet <= 5'
+binsNJ['NJ45f9'] = '4 <= nJet && nJet <= 5'
+binsNJ['NJ45f6'] = '4 <= nJet && nJet <= 5'
 binsNJ['NJ68'] = '6 <= nJet && nJet <= 8'
 binsNJ['NJ9i'] = '9 <= nJet'
 
@@ -84,15 +85,20 @@ for nj_bin in ['NJ4i']:#,'NJ45']:
 
 ### REAL SEARCH BINS (also for RCS)
 cutDict = {}
+cutDictf9 = {}
 
 cutDictSR = {}
 cutDictCR = {}
 
-cutDictNJ45 = {}
+cutDictSRf9 = {}
+cutDictCRf9 = {}
+
+cutDictNJ45f6 = {}
+cutDictNJ45f9 = {}
 cutDictNJ68 = {}
 cutDictNJ9i = {}
 
-for nj_bin in ['NJ45','NJ68']:#binsNJ.iteritems():
+for nj_bin in ['NJ45f6','NJ68']:#binsNJ.iteritems():
     nj_cut = binsNJ[nj_bin]
 
     ltbins = ['LT1','LT2','LT3','LT4i']
@@ -128,7 +134,7 @@ for nj_bin in ['NJ45','NJ68']:#binsNJ.iteritems():
                 if nj_bin in ['NJ68']:
                     nbbins += ['NB2','NB3i']
                 # Side band  binning
-                if nj_bin in ['NJ45']:
+                if nj_bin in ['NJ45f6']:
                     nbbins += ['NB2i']
 
             for nb_bin in nbbins:
@@ -152,7 +158,7 @@ for nj_bin in ['NJ45','NJ68']:#binsNJ.iteritems():
 
 
 ### FIXME
-for nj_bin in ['NJ9i']:#binsNJ.iteritems():
+for nj_bin in ['NJ45f9','NJ9i']:#binsNJ.iteritems():
     nj_cut = binsNJ[nj_bin]
 
     ltbins = ['LT1','LT2','LT3i']
@@ -164,16 +170,10 @@ for nj_bin in ['NJ9i']:#binsNJ.iteritems():
 
 
         ### FIXME
-        if lt_bin in ['LT1']:
-            htbins += ['HT01','HT2i']
-        if lt_bin in ['LT1','LT2']:
-            htbins += ['HT0']
-        if lt_bin in ['LT2']:
-            htbins += ['HT1']
-        if lt_bin in ['LT2','LT3','LT4i']:
-            htbins += ['HT2i']
-        if lt_bin in ['LT3','LT4i']:
-            htbins += ['HT01']
+        if lt_bin in ['LT1', 'LT2']:
+            htbins += ['HT0i','HT01','HT2i']
+        if lt_bin in ['LT3i']:
+            htbins += ['HT0i']
 
         #for ht_bin,ht_cut in binsHT.iteritems():
         for ht_bin in htbins:
@@ -182,15 +182,44 @@ for nj_bin in ['NJ9i']:#binsNJ.iteritems():
             nbbins = []
 
             # Match NB bins
-            if lt_bin in ['LT1','LT2']:
-                nbbins += ['NB1','NB2','NB3i']
+            if lt_bin in ['LT1','LT2'] and not ht_bin in['HT0i']:
+                # Signal region binning
+                if nj_bin in ['NJ9i']:
+                    nbbins += ['NB1','NB2']
+                # Side band  binning
+                if nj_bin in ['NJ45f9']:
+                    nbbins += ['NB1','NB2i']
 
             if lt_bin in ['LT3i']:
                 nbbins += ['NB1i']
+
+            if lt_bin in ['LT1','LT2'] and ht_bin in ['HT0i']:
+                if nj_bin in ['NJ9i']:
+                    nbbins += ['NB3i']
+                # Side band  binning
+                if nj_bin in ['NJ45f9']:
+                    nbbins += ['NB2i']
+
+
 
             for nb_bin in nbbins:
                 nb_cut = binsNB[nb_bin]
 
                 binname = "%s_%s_%s_%s" %(lt_bin,ht_bin,nb_bin,nj_bin)
 
-                cutDictNJ9i[binname] = [("base",lt_bin,lt_cut),("base",ht_bin,ht_cut),("base",nb_bin,nb_cut),("base",nj_bin,nj_cut)]
+                cutDictf9[binname] = [("base",lt_bin,lt_cut),("base",ht_bin,ht_cut),("base",nb_bin,nb_cut),("base",nj_bin,nj_cut)]
+
+                                # split to SR/CR
+
+                for sr_bin in ['SR']:
+                    sr_cut = binsSR[sr_bin]
+
+                    binname = "%s_%s_%s_%s_%s" %(lt_bin,ht_bin,nb_bin,nj_bin,sr_bin)
+                    cutDictSRf9[binname] = [("base",lt_bin,lt_cut),("base",ht_bin,ht_cut),("base",nb_bin,nb_cut),("base",nj_bin,nj_cut),("base",sr_bin,sr_cut)]
+
+                for cr_bin in ['CR']:
+                    cr_cut = binsCR[cr_bin]
+
+                    binname = "%s_%s_%s_%s_%s" %(lt_bin,ht_bin,nb_bin,nj_bin,cr_bin)
+                    cutDictCRf9[binname] = [("base",lt_bin,lt_cut),("base",ht_bin,ht_cut),("base",nb_bin,nb_cut),("base",nj_bin,nj_cut),("base",cr_bin,cr_cut)]
+
