@@ -66,7 +66,7 @@ isoTrackAna.setOff=False
 genAna.allGenTaus = True
 
 #add LHE ana
-from PhysicsTools.Heppy.analyzers.gen.LHEAnalyzer import LHEAnalyzer 
+from PhysicsTools.Heppy.analyzers.gen.LHEAnalyzer import LHEAnalyzer
 LHEAna = LHEAnalyzer.defaultConfig
 
 from CMGTools.TTHAnalysis.analyzers.ttHLepEventAnalyzer import ttHLepEventAnalyzer
@@ -109,6 +109,8 @@ triggerFlagsAna.triggerBits = {
 	'MuHT600' : triggers_mu_ht600,
 	'MuHT400MET70' : triggers_mu_ht400_met70,
 	'MuHT350MET70' : triggers_mu_ht350_met70,
+	'MuHT350MET50' : triggers_mu_ht350_met50,
+	'MuHT350' : triggers_mu_ht350,
 	'MuHTMET' : triggers_mu_ht350_met70 + triggers_mu_ht400_met70,
 	'MuMET120' : triggers_mu_met120,
 	'MuHT400B': triggers_mu_ht400_btag,
@@ -118,6 +120,8 @@ triggerFlagsAna.triggerBits = {
 	'EleHT600' : triggers_el_ht600,
 	'EleHT400MET70' : triggers_el_ht400_met70,
 	'EleHT350MET70' : triggers_el_ht350_met70,
+	'EleHT350MET50' : triggers_el_ht350_met50,
+	'EleHT350' : triggers_el_ht350,
 	'EleHTMET' : triggers_el_ht350_met70 + triggers_el_ht400_met70,
 	'EleHT200' :triggers_el_ht200,
 	'EleHT400B': triggers_el_ht400_btag
@@ -126,10 +130,10 @@ triggerFlagsAna.triggerBits = {
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- HOW TO RUN
-isData = False
+isData = True
 
-sample = 'MC'
-#sample = 'data'
+#sample = 'MC'
+sample = 'data'
 test = 1
 
 if sample == "MC":
@@ -145,7 +149,7 @@ if sample == "MC":
 	ttHLepSkim.minLeptons = 1
 
 	# -- new 74X samples
-	#from CMGTools.RootTools.samples.samples_13TeV_74X import *
+#	from CMGTools.RootTools.samples.samples_13TeV_74X import *
 	# -- samples at DESY
 	from CMGTools.SUSYAnalysis.samples.samples_13TeV_74X_desy import *
 
@@ -186,9 +190,8 @@ elif sample == "data":
 
 	print 'Going to process DATA'
 
-	jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_DATA.db'
-	jecEra    = 'Summer15_25nsV2_DATA'
-
+	jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA.db'
+	jecEra    = 'Summer15_25nsV5'#'Summer15_25nsV2_DATA'
 
 	isData = True
 
@@ -196,21 +199,24 @@ elif sample == "data":
 	ttHLepSkim.minLeptons = 0
 
 	# central samples
-	#from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
+#	from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 	# samples at DESY
 	from CMGTools.SUSYAnalysis.samples.samples_13TeV_DATA2015_desy import *
 
 	#selectedComponents = [ SingleElectron_Run2015B, SingleMuon_Run2015B ]
 	#selectedComponents = [ SingleElectron_Run2015B ]
-	selectedComponents = [ SingleElectron_Run2015B, SingleElectron_Run2015B_17Jul ]
+	#selectedComponents = [ SingleElectron_Run2015B, SingleElectron_Run2015B_17Jul ]
 	#selectedComponents = [ SingleMuon_Run2015B, SingleMuon_Run2015B_17Jul ]
 	#selectedComponents = [ JetHT_Run2015B, JetHT_Run2015B_17Jul ]
 	#selectedComponents = [ HTMHT_Run2015B ]
 
+	selectedComponents = [ JetHT_Run2015D, SingleElectron_Run2015D, SingleMuon_Run2015D ]
 
 	if test==1:
 		# test a single component, using a single thread.
-		comp = JetHT_Run2015B
+		comp = JetHT_Run2015D
+		#comp = SingleElectron_Run2015D
+		#comp.files = ['dcap://dcache-cms-dcap.desy.de/pnfs/desy.de/cms/tier2//store/data/Run2015D/JetHT/MINIAOD/PromptReco-v3/000/256/587/00000/F664AC07-935D-E511-A019-02163E01424B.root']
 		comp.files = comp.files[:1]
 		selectedComponents = [comp]
 		comp.splitFactor = 1
@@ -237,27 +243,30 @@ elif sample == "data":
 
 removeResiduals = False
 # -------------------- Running pre-processor
-import subprocess
-preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
-extraArgs=[]
-if isData:
-	extraArgs.append('--isData')
-	GT= '74X_dataRun2_Prompt_v1'
-else:
-	GT= 'MCRUN2_74_V9A'
-if removeResiduals:extraArgs.append('--removeResiduals')
-args = ['python',
-	os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
-		'--GT='+GT,
-	'--outputFile='+preprocessorFile,
-	'--jecDBFile='+jecDBFile,
-	'--jecEra='+jecEra
-	] + extraArgs
+preprocessor = None
+doMETpreprocessor = True
+if doMETpreprocessor:
+	import subprocess
+	preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
+	extraArgs=[]
+	if isData:
+		extraArgs.append('--isData')
+		GT= '74X_dataRun2_Prompt_v1'
+	else:
+		GT= 'MCRUN2_74_V9A'
+	if removeResiduals:extraArgs.append('--removeResiduals')
+	args = ['python',
+		os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
+			'--GT='+GT,
+		'--outputFile='+preprocessorFile,
+		'--jecDBFile='+jecDBFile,
+		'--jecEra='+jecEra
+		] + extraArgs
 #print "Making pre-processorfile:"
 #print " ".join(args)
-subprocess.call(args)
-from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-preprocessor = CmsswPreprocessor(preprocessorFile)
+	subprocess.call(args)
+	from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
+	preprocessor = CmsswPreprocessor(preprocessorFile)
 
 #--------- Tree Producer
 from CMGTools.TTHAnalysis.analyzers.treeProducerSusySingleLepton import *

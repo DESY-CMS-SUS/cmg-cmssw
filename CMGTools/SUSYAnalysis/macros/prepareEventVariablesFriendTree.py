@@ -193,6 +193,10 @@ if options.naf:
             #print "{base} -d {data} {post}".format(base=basecmd, data=name, chunk=chunk, post=friendPost)
             jobList.write("{base} -d {data} {post}".format(base=basecmd, data=name, chunk=chunk, post=friendPost)+'\n')
 
+    # check log dir
+    logdir = 'logs'
+    if not os.path.exists(logdir): os.system("mkdir -p "+logdir)
+
     # submit job array on list
     subCmd = 'qsub -t 1-%s -o logs nafbatch_runner.sh %s' %(len(jobs),jobListName)
     print 'Going to submit', len(jobs), 'jobs with', subCmd

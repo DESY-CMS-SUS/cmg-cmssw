@@ -5,11 +5,9 @@ import os
 
 from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
 kreator = ComponentCreator()
-dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"  # use environmental variable, useful for instance to run on CRAB
-#lumi: delivered= 4.430 (/nb) recorded= 4.013 (/nb)
-#json=dataDir+'/json/DCSONLY_Run2015B.json'
-#json=dataDir+'/json/Cert_Run2015B-PromptV2.json'
-json=dataDir+'/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json' # golden json 40.03 pb 
+#dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"  # use environmental variable, useful for instance to run on CRAB
+dataDir = "$CMSSW_BASE/src/CMGTools/RootTools/data"  # use environmental variable, useful for instance to run on CRAB
+json=dataDir+'/json/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt' # golden json Run2015C+D
 
 ### ----------------------------- Magnetic Field On ----------------------------------------
 
@@ -29,6 +27,9 @@ DoubleMuon_Run2015B     = kreator.makeDataComponent("DoubleMuon_Run2015B"    , "
 minBias_Run2015B  = kreator.makeDataComponent("minBias_Run2015B" , "/MinimumBias/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json, [251585,251883])
 zeroBias_Run2015B = kreator.makeDataComponent("zeroBias_Run2015B", "/ZeroBias/Run2015B-PromptReco-v1/MINIAOD"   , "CMS", ".*root", json, [251585,251883])
 
+dataSamples_Run2015B = [Jet_Run2015B, JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMu_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, EGamma_Run2015B, DoubleEG_Run2015B, MuonEG_Run2015B, DoubleMuon_Run2015B, minBias_Run2015B, zeroBias_Run2015B]
+
+
 ### ----------------------------- 17July re-reco ----------------------------------------
 
 JetHT_Run2015B_17Jul          = kreator.makeDataComponent("JetHT_Run2015B_17Jul"         , "/JetHT/Run2015B-17Jul2015-v1/MINIAOD"         , "CMS", ".*root", json)
@@ -36,14 +37,22 @@ HTMHT_Run2015B_17Jul          = kreator.makeDataComponent("HTMHT_Run2015B_17Jul"
 SingleElectron_Run2015B_17Jul = kreator.makeDataComponent("SingleElectron_Run2015B_17Jul", "/SingleElectron/Run2015B-17Jul2015-v1/MINIAOD", "CMS", ".*root", json)
 SingleMuon_Run2015B_17Jul     = kreator.makeDataComponent("SingleMuon_Run2015B_17Jul"    , "/SingleMuon/Run2015B-17Jul2015-v1/MINIAOD"    , "CMS", ".*root", json)
 
-### ----------------------------- summary ----------------------------------------
-
-
-dataSamples = [Jet_Run2015B, JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMu_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, EGamma_Run2015B, DoubleEG_Run2015B, MuonEG_Run2015B, DoubleMuon_Run2015B, minBias_Run2015B, zeroBias_Run2015B]
 
 dataSamples_17Jul = [JetHT_Run2015B_17Jul, HTMHT_Run2015B_17Jul, SingleElectron_Run2015B_17Jul, SingleMuon_Run2015B_17Jul]
 
-samples = dataSamples + dataSamples_17Jul
+### ----------------------------- Run2015D ----------------------------------------
+### only those at desy
+
+JetHT_Run2015D          = kreator.makeDataComponentDESY("JetHT_Run2015D"         , "/JetHT/Run2015D-PromptReco-v3/MINIAOD"         , "CMS", ".*root", json)
+SingleElectron_Run2015D = kreator.makeDataComponentDESY("SingleElectron_Run2015D", "/SingleElectron/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json)
+SingleMuon_Run2015D     = kreator.makeDataComponentDESY("SingleMuon_Run2015D"    , "/SingleMuon/Run2015D-PromptReco-v3/MINIAOD"    , "CMS", ".*root", json)
+
+dataSamples_Run2015D = [JetHT_Run2015D, SingleElectron_Run2015D, SingleMuon_Run2015D]
+
+### ----------------------------- summary ----------------------------------------
+
+dataSamples = dataSamples_Run2015B + dataSamples_17Jul + dataSamples_Run2015D
+samples = dataSamples
 
 ### ---------------------------------------------------------------------
 

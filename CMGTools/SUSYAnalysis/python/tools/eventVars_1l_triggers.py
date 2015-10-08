@@ -14,10 +14,10 @@ class EventVars1L_triggers:
             'HLT_MET170',
             'HLT_HT350MET120','HLT_HT350MET100','HLT_HTMET',
             'HLT_IsoMu27','HLT_Mu50', # single mu
-            'HLT_MuHT400MET70','HLT_MuHT350MET70', 'HLT_MuHTMET',# for analysis
+            'HLT_MuHT400MET70','HLT_MuHT350MET70','HLT_MuHT350MET50', 'HLT_MuHTMET','HLT_MuHT350',# for analysis
             'HLT_MuHT600', 'HLT_MuMET120', 'HLT_MuHT400B', #aux
             'HLT_IsoEle32','HLT_Ele105', # single ele
-            'HLT_EleHT400MET70','HLT_EleHT350MET70','HLT_EleHTMET', # for analysis
+            'HLT_EleHT400MET70','HLT_EleHT350MET70','HLT_EleHT350MET50','HLT_EleHTMET','HLT_EleHT350', # for analysis
             'HLT_EleHT600','HLT_EleHT200', 'HLT_EleHT400B', # aux
             ## custom names
             'HLT_EleOR', 'HLT_MuOR','HLT_LepOR'
@@ -52,6 +52,8 @@ class EventVars1L_triggers:
             #print var, getattr(event,var)
             if 'HLT_' in var and hasattr(event,var):
                 ret[var] = getattr(event,var)
+            else:
+                ret[var] = 0
 
         # return branches
         return ret
