@@ -284,8 +284,7 @@ class Dataset( BaseDataset ):
 
         file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
         if file_mask:
-            # here to avoid circular dependency
-            from edmIntegrityCheck import PublishToFileSystem
+            from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
             p = PublishToFileSystem(mask)
             report = p.get(self.castorDir)
             if report is not None and report:

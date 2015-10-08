@@ -223,7 +223,7 @@ def cleanUnscheduled(proc):
   # If there is a schedule then it needs to point at
   # the new Path objects
   if proc.schedule:
-      proc.schedule = cms.Schedule([getattr(proc,p) for p in pathNamesInScheduled])
+      proc._Process__schedule = None
   return proc
 
 if __name__ == "__main__":

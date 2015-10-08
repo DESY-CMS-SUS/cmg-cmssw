@@ -15,16 +15,14 @@ PFTau::PFTau()
     hcalTotOverPLead_ = NAN;
     hcalMaxOverPLead_ = NAN;
     hcal3x3OverPLead_ = NAN;
-    ecalStripSumEOverPLead_ = NAN;
+    ecalStripSumEOverPLead_= NAN;
     bremsRecoveryEOverPLead_ = NAN;
     electronPreIDOutput_ = NAN;
-    electronPreIDDecision_ = NAN;
+    electronPreIDDecision_= NAN;
     caloComp_ = NAN;
     segComp_ = NAN;
     muonDecision_ = NAN;
-    decayMode_ = kNull;
-    bendCorrMass_ = 0.;
-    signalConeSize_ = 0.;
+    decayMode_=kNull;
 }
 
 PFTau::PFTau(Charge q, const LorentzVector& p4, const Point& vtx) 
@@ -42,14 +40,12 @@ PFTau::PFTau(Charge q, const LorentzVector& p4, const Point& vtx)
    ecalStripSumEOverPLead_= NAN;
    bremsRecoveryEOverPLead_ = NAN;
    electronPreIDOutput_ = NAN;
-   electronPreIDDecision_ = NAN;
+   electronPreIDDecision_= NAN;
 
    caloComp_ = NAN;
    segComp_ = NAN;
    muonDecision_ = NAN;
-   decayMode_ = kNull;
-   bendCorrMass_ = 0.;
-   signalConeSize_ = 0.;
+   decayMode_=kNull;
 }
 
 PFTau* PFTau::clone() const { return new PFTau(*this); }
@@ -180,6 +176,22 @@ void PFTau::setIsolationTauChargedHadronCandidatesRefs(const PFRecoTauChargedHad
 }
 
 PFTau::hadronicDecayMode PFTau::decayMode() const { return decayMode_; }
+
+PFTau::hadronicDecayMode PFTau::calculateDecayMode() const {
+  unsigned int nCharged = signalTauChargedHadronCandidates().size();
+  unsigned int nPiZeros = signalPiZeroCandidates().size();
+  // If no tracks exist, this is definitely not a tau!
+  if ( !nCharged ) return kNull;
+  // Find the maximum number of PiZeros our parameterization can hold
+  const unsigned int maxPiZeros = kOneProngNPiZero;
+  // Determine our track index
+  unsigned int trackIndex = (nCharged - 1)*(maxPiZeros + 1);
+  // Check if we handle the given number of tracks
+  if ( trackIndex >= kRareDecayMode ) return kRareDecayMode;
+
+  if(nPiZeros>maxPiZeros) nPiZeros=maxPiZeros;
+  return static_cast<PFTau::hadronicDecayMode>(trackIndex + nPiZeros);
+}
 
 void PFTau::setDecayMode(const PFTau::hadronicDecayMode& dm){ decayMode_=dm;}
 

@@ -7,15 +7,14 @@
 #include "DataFormats/L1Trigger/interface/Jet.h"
 #include "DataFormats/L1Trigger/interface/Tau.h"
 
-//#include "EventFilter/L1TRawToDigi/interface/UnpackerCollections.h"
-#include "L1TObjectCollections.h"
+#include "EventFilter/L1TRawToDigi/interface/UnpackerCollections.h"
 
 namespace l1t {
    namespace stage2 {
-     class CaloCollections : public L1TObjectCollections {
+      class CaloCollections : public UnpackerCollections {
          public:
             CaloCollections(edm::Event& e) :
-               L1TObjectCollections(e),
+               UnpackerCollections(e),
                towers_(new CaloTowerBxCollection()),
                egammas_(new EGammaBxCollection()),
                etsums_(new EtSumBxCollection()),
@@ -27,10 +26,10 @@ namespace l1t {
             virtual ~CaloCollections();
 
             inline CaloTowerBxCollection* getTowers() { return towers_.get(); };
-            inline EGammaBxCollection* getEGammas() override { return egammas_.get(); };
-            inline EtSumBxCollection* getEtSums() override { return etsums_.get(); };
-            inline JetBxCollection* getJets() override { return jets_.get(); };
-            inline TauBxCollection* getTaus() override { return taus_.get(); };
+            inline EGammaBxCollection* getEGammas() { return egammas_.get(); };
+            inline EtSumBxCollection* getEtSums() { return etsums_.get(); };
+            inline JetBxCollection* getJets() { return jets_.get(); };
+            inline TauBxCollection* getTaus() { return taus_.get(); };
 
             inline EtSumBxCollection* getMPEtSums() { return mp_etsums_.get(); };
             inline JetBxCollection* getMPJets() { return mp_jets_.get(); };

@@ -2,15 +2,13 @@
 #include "PhysicsTools/Heppy/interface/EGammaMvaEleEstimatorFWLite.h"
 #include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimator.h"
 #include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimatorCSA14.h"
-#include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimatorSpring15NonTrig.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
 namespace heppy {
 
 EGammaMvaEleEstimatorFWLite::EGammaMvaEleEstimatorFWLite() :
     estimator_(0),
-    estimatorCSA14_(0),
-    estimatorSpring15NonTrig_(0)
+    estimatorCSA14_(0)
 {
 }
 
@@ -18,7 +16,6 @@ EGammaMvaEleEstimatorFWLite::~EGammaMvaEleEstimatorFWLite()
 {
     delete estimator_;
     delete estimatorCSA14_;
-    delete estimatorSpring15NonTrig_;
 }
 
 void EGammaMvaEleEstimatorFWLite::initialize( std::string methodName,
@@ -28,7 +25,6 @@ void EGammaMvaEleEstimatorFWLite::initialize( std::string methodName,
 {
     delete estimator_; estimator_ = 0;
     delete estimatorCSA14_; estimatorCSA14_ = 0;
-    delete estimatorSpring15NonTrig_; estimatorSpring15NonTrig_ = 0;
     std::vector<std::string> weightspaths;
     for (const std::string &s : weightsfiles) {
         weightspaths.push_back( edm::FileInPath(s).fullPath() );
@@ -64,10 +60,6 @@ void EGammaMvaEleEstimatorFWLite::initialize( std::string methodName,
                                         /* useFixedEoPDef = */!hasEoPbug);
             }
             break;
-        case EGammaMvaEleEstimatorFWLite::kNonTrigSpring15:
-            estimatorSpring15NonTrig_ = new EGammaMvaEleEstimatorSpring15NonTrig();
-            estimatorSpring15NonTrig_->initialize(methodName, weightspaths);
-            break;
         default:
             return;
     }
@@ -75,14 +67,12 @@ void EGammaMvaEleEstimatorFWLite::initialize( std::string methodName,
 
 float EGammaMvaEleEstimatorFWLite::mvaValue(const pat::Electron& ele,
                 const reco::Vertex& vertex,
-		const fwlite::EventBase& eventbase,
                 double rho,
                 bool full5x5,
                 bool printDebug)
 {
     if (estimator_) return estimator_->mvaValue(ele,vertex,rho,full5x5,printDebug);
     else if (estimatorCSA14_) return estimatorCSA14_->mvaValue(ele,printDebug);
-    else if (estimatorSpring15NonTrig_) return estimatorSpring15NonTrig_->mvaValue(ele,eventbase,printDebug);
     else throw cms::Exception("LogicError", "You must call unitialize before mvaValue\n");
 }
 

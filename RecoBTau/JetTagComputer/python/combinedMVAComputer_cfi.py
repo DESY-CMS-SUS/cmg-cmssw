@@ -12,7 +12,7 @@ combinedMVAComputer = cms.ESProducer("CombinedMVAJetTagESProducer",
 		cms.PSet(
 			discriminator = cms.bool(True),
 			variables = cms.bool(False),
-			jetTagComputer = cms.string('combinedSecondaryVertexV2Computer')
+			jetTagComputer = cms.string('combinedSecondaryVertexComputer')
 		),
 		cms.PSet(
 			discriminator = cms.bool(True),

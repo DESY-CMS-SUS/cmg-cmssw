@@ -17,7 +17,6 @@
 // Constructor
 HLTPFJetIDProducer::HLTPFJetIDProducer(const edm::ParameterSet& iConfig) :
   minPt_    (iConfig.getParameter<double>("minPt")),
-  maxEta_   (iConfig.getParameter<double>("maxEta")),
   CHF_      (iConfig.getParameter<double>("CHF")),
   NHF_      (iConfig.getParameter<double>("NHF")),
   CEF_      (iConfig.getParameter<double>("CEF")),
@@ -38,7 +37,6 @@ HLTPFJetIDProducer::~HLTPFJetIDProducer() {}
 void HLTPFJetIDProducer::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
     edm::ParameterSetDescription desc;
     desc.add<double>("minPt", 20.);
-    desc.add<double>("maxEta", 1e99);
     desc.add<double>("CHF", -99.);
     desc.add<double>("NHF", 99.);
     desc.add<double>("CEF", 99.);
@@ -68,8 +66,8 @@ void HLTPFJetIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
         if (pt < minPt_) {
             pass = true;
 
-        } else if (std::abs(eta) >= maxEta_) {
-            pass = true;
+        //} else if (std::abs(eta) >= 2.4) {
+        //    pass = true;
 
         } else {
             double chf  = j->chargedHadronEnergyFraction();
@@ -83,7 +81,7 @@ void HLTPFJetIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
             pass = true;
             pass = pass && (ntot > NTOT_);
             pass = pass && (nef < NEF_);
-            pass = pass && (nhf < NHF_); //to be revisited if PF-reconstruction at HLT changes to be in line with offline code
+            pass = pass && (nhf < NHF_);
             pass = pass && (cef < CEF_ || std::abs(eta) >= 2.4);
             pass = pass && (chf > CHF_ || std::abs(eta) >= 2.4);
             pass = pass && (nch > NCH_ || std::abs(eta) >= 2.4);

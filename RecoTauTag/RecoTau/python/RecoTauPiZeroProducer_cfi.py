@@ -12,8 +12,7 @@ ak4PFJetsLegacyHPSPiZeros = cms.EDProducer(
     outputSelection = cms.string('pt > 0'),
     builders = cms.VPSet(
         #builders.strips
-        #builders.modStrips
-        builders.modStrips2
+        builders.modStrips
     ),
     ranking = cms.VPSet(
         ranking.isInStrip
@@ -40,8 +39,7 @@ ak4PFJetsRecoTauPiZeros = ak4PFJetsLegacyHPSPiZeros.clone(
     builders = cms.VPSet(
         builders.combinatoricPhotonPairs,
         #builders.strips
-        #builders.modStrips
-        builders.modStrips2
+        builders.modStrips
     ),
     ranking = cms.VPSet(
         ranking.nearPiZeroMassBarrel, # Prefer pi zeros +- 0.05 GeV correct mass

@@ -98,8 +98,7 @@ namespace edm {
     std::vector<unsigned char> dest_;
     TBufferFile xbuf_;
     std::unique_ptr<SendEvent> sendEvent_;
-    std::unique_ptr<EventPrincipalHolder> eventPrincipalHolder_;
-    std::vector<std::unique_ptr<EventPrincipalHolder>> streamToEventPrincipalHolders_;
+    EventPrincipalHolder eventPrincipalHolder_;
     bool adjustEventToNewProductRegistry_;
 
     std::string processName_;

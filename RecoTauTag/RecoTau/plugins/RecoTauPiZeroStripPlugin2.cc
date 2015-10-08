@@ -170,16 +170,15 @@ void RecoTauPiZeroStripPlugin2::addCandsToStrip(RecoTauPiZero& strip, PFCandPtrs
   }
 }
 
-namespace 
+void markCandsInStrip(std::vector<bool>& candFlags, const std::set<size_t>& candIds)
 {
-  void markCandsInStrip(std::vector<bool>& candFlags, const std::set<size_t>& candIds)
-  {
-    for ( std::set<size_t>::const_iterator candId = candIds.begin();
-	  candId != candIds.end(); ++candId ) {
-      candFlags[*candId] = true;
-    }
+  for ( std::set<size_t>::const_iterator candId = candIds.begin();
+	candId != candIds.end(); ++candId ) {
+    candFlags[*candId] = true;
   }
-  
+}
+
+namespace {
   inline const reco::TrackBaseRef getTrack(const PFCandidate& cand)
   {
     if      ( cand.trackRef().isNonnull()    ) return reco::TrackBaseRef(cand.trackRef());

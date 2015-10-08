@@ -64,7 +64,6 @@ RecoMETAOD = cms.PSet(
                                            'drop recoHcalNoiseRBXs_*_*_*',
                                            'keep HcalNoiseSummary_hcalnoise_*_*',
                                            'keep *GlobalHaloData_*_*_*',
-                                           'keep recoCSCHaloData_CSCHaloData_*_*',
                                            'keep *BeamHaloSummary_BeamHaloSummary_*_*'
                                            )
     )

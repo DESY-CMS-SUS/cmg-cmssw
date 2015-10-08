@@ -59,12 +59,13 @@ class GenericValidation:
             self.scramarch = os.environ["SCRAM_ARCH"]
             self.cmsswreleasebase = os.environ["CMSSW_RELEASE_BASE"]
         else:
+            self.scramarch = None
+            self.cmsswreleasebase = None
             command = ("cd '" + self.cmssw + "' && eval `scramv1 ru -sh 2> /dev/null`"
-                       ' && echo "$CMSSW_BASE\n$SCRAM_ARCH\n$CMSSW_RELEASE_BASE"')
+                       ' && echo "$SCRAM_ARCH\n$CMSSW_RELEASE_BASE"')
             commandoutput = getCommandOutput2(command).split('\n')
-            self.cmssw = commandoutput[0]
-            self.scramarch = commandoutput[1]
-            self.cmsswreleasebase = commandoutput[2]
+            self.scramarch = commandoutput[0]
+            self.cmsswreleasebase = commandoutput[1]
 
         self.AutoAlternates = True
         if config.has_option("alternateTemplates","AutoAlternates"):
@@ -250,7 +251,7 @@ class GenericValidationData(GenericValidation):
 
         self.dataset = globalDictionaries.usedDatasets[self.general["dataset"]][self.cmssw][tryPredefinedFirst]
         self.general["magneticField"] = self.dataset.magneticField()
-        self.general["defaultMagneticField"] = "MagneticField"
+        self.general["defaultMagneticField"] = "38T"
         if self.general["magneticField"] == "unknown":
             print "Could not get the magnetic field for this dataset."
             print "Using the default: ", self.general["defaultMagneticField"]

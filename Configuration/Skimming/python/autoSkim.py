@@ -20,7 +20,7 @@ autoSkim = {
  'HcalNZS' : 'LogError+LogErrorMonitor',
  'HLTPhysics' : 'LogError+LogErrorMonitor',
  'ZeroBias' : 'LogError+LogErrorMonitor',
- 'Commissioning' : 'EcalActivity+LogError+LogErrorMonitor',
+ 'Commissioning' : 'LogError+LogErrorMonitor',
  'Cosmics':'CosmicSP+CosmicTP+LogError+LogErrorMonitor'
 }
 

@@ -11,8 +11,6 @@ HLTriggerFirstPath
 HLTriggerFinalPath
 HLTAnalyzerEndpath
 
-PhysicsEGammaCommissioningOutput
-PhysicsHadronsTausOutput
-PhysicsMuonsOutput
+AOutput
 #RatesMonitoring				# only in 'online'
 DQMOutput

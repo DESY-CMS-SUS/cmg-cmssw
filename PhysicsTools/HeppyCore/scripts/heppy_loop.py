@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     from optparse import OptionParser
-    from PhysicsTools.HeppyCore.framework.heppy_loop import main
+    from PhysicsTools.HeppyCore.framework.heppy_loop import *
 
     parser = OptionParser()
     parser.usage = """
@@ -56,6 +56,6 @@ if __name__ == '__main__':
 
     (options,args) = parser.parse_args()
 
-    loop = main(options, args, parser)
+    main(options, args, parser)
     if not options.interactive:
         exit() # trigger exit also from ipython

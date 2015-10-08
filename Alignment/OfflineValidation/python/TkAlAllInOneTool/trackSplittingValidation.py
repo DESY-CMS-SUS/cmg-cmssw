@@ -10,7 +10,6 @@ class TrackSplittingValidation(GenericValidationData):
                  configBaseName = "TkAlTrackSplitting", scriptBaseName = "TkAlTrackSplitting", crabCfgBaseName = "TkAlTrackSplitting",
                  resultBaseName = "TrackSplitting", outputBaseName = "TrackSplitting"):
         mandatories = ["trackcollection"]
-        defaults = {"subdetector": "BPIX"}
         self.configBaseName = configBaseName
         self.scriptBaseName = scriptBaseName
         self.crabCfgBaseName = crabCfgBaseName
@@ -18,10 +17,7 @@ class TrackSplittingValidation(GenericValidationData):
         self.outputBaseName = outputBaseName
         self.needParentFiles = False
         GenericValidationData.__init__(self, valName, alignment, config,
-                                       "split", addMandatories = mandatories, addDefaults = defaults)
-        validsubdets = self.validsubdets()
-        if self.general["subdetector"] not in validsubdets:
-            raise AllInOneError("'%s' is not a valid subdetector!\n" % self.general["subdetector"] + "The options are: " + ", ".join(validsubdets))
+                                       "split", addMandatories = mandatories)
 
     def createConfiguration(self, path ):
         cfgName = "%s.%s.%s_cfg.py"%(self.configBaseName, self.name,
@@ -42,9 +38,8 @@ class TrackSplittingValidation(GenericValidationData):
         repMap = GenericValidationData.getRepMap(self)
         repMap.update({ 
             "nEvents": self.general["maxevents"],
-            "TrackCollection": self.general["trackcollection"],
-            "subdetector": self.general["subdetector"],
-        })
+            "TrackCollection": self.general["trackcollection"]
+            })
         # repMap["outputFile"] = os.path.abspath( repMap["outputFile"] )
         # if self.jobmode.split( ',' )[0] == "crab":
         #     repMap["outputFile"] = os.path.basename( repMap["outputFile"] )
@@ -59,7 +54,7 @@ class TrackSplittingValidation(GenericValidationData):
         repMap = self.getRepMap()
         comparestring = self.getCompareStrings("TrackSplittingValidation")
         if validationsSoFar != "":
-            validationsSoFar += ',"\n              "'
+            validationsSoFar += ','
         validationsSoFar += comparestring
         return validationsSoFar
 
@@ -73,33 +68,5 @@ class TrackSplittingValidation(GenericValidationData):
         parameters = " ".join(os.path.join("root://eoscms//eos/cms", file.lstrip("/")) for file in repMap["resultFiles"])
 
         mergedoutputfile = os.path.join("root://eoscms//eos/cms", repMap["finalResultFile"].lstrip("/"))
-        validationsSoFar += "hadd -f %s %s\n" % (mergedoutputfile, parameters)
+        validationsSoFar += "hadd %s %s\n" % (mergedoutputfile, parameters)
         return validationsSoFar
-
-    def validsubdets(self):
-        filename = os.path.join(self.cmssw, "src/Alignment/CommonAlignmentProducer/python/AlignmentTrackSelector_cfi.py")
-        if not os.path.isfile(filename):
-            filename = os.path.join(self.cmsswreleasebase, "src/Alignment/CommonAlignmentProducer/python/AlignmentTrackSelector_cfi.py")
-        with open(filename) as f:
-            trackselector = f.read()
-
-        minhitspersubdet = trackselector.split("minHitsPerSubDet")[1].split("(",1)[1]
-
-        parenthesesdepth = 0
-        i = 0
-        for character in minhitspersubdet:
-            if character == "(":
-                parenthesesdepth += 1
-            if character == ")":
-                parenthesesdepth -= 1
-            if parenthesesdepth < 0:
-                break
-            i += 1
-        minhitspersubdet = minhitspersubdet[0:i]
-
-        results = minhitspersubdet.split(",")
-        empty = []
-        for i in range(len(results)):
-            results[i] = results[i].split("=")[0].strip().replace("in", "", 1)
-
-        return [a for a in results if a]

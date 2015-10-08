@@ -25,12 +25,11 @@ int MultShiftMETcorrInputProducer::translateTypeToAbsPdgId( reco::PFCandidate::P
 
 
 MultShiftMETcorrInputProducer::MultShiftMETcorrInputProducer(const edm::ParameterSet& cfg):
+  pflow_ ( cfg.getParameter< edm::InputTag >("srcPFlow") ),
+  vertices_ ( cfg.getParameter< edm::InputTag >("vertexCollection") ),
   moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
   
-  pflow_ = consumes<edm::View<reco::Candidate> >(cfg.getParameter< edm::InputTag >("srcPFlow") );
-  vertices_ = consumes<edm::View<reco::Vertex> >( cfg.getParameter< edm::InputTag >("vertexCollection") );
-
   cfgCorrParameters_ = cfg.getParameter<std::vector<edm::ParameterSet> >("parameters");
   etaMin_.clear(); 
   etaMax_.clear();
@@ -44,7 +43,7 @@ MultShiftMETcorrInputProducer::MultShiftMETcorrInputProducer(const edm::Paramete
     TString corrPyFormula = v->getParameter<std::string>("fy");
     std::vector<double> corrPxParams = v->getParameter<std::vector<double> >("px");
     std::vector<double> corrPyParams = v->getParameter<std::vector<double> >("py");
-     
+  
     formula_x_.push_back( std::unique_ptr<TF1>(new TF1(std::string(moduleLabel_).append("_").append(v->getParameter<std::string>("name")).append("_corrPx").c_str(), v->getParameter<std::string>("fx").c_str()) ) );
     formula_y_.push_back( std::unique_ptr<TF1>(new TF1(std::string(moduleLabel_).append("_").append(v->getParameter<std::string>("name")).append("_corrPy").c_str(), v->getParameter<std::string>("fy").c_str()) ) );
 
@@ -68,9 +67,10 @@ void MultShiftMETcorrInputProducer::produce(edm::Event& evt, const edm::EventSet
 {
   //get primary vertices
   edm::Handle<edm::View<reco::Vertex> > hpv;
-  evt.getByToken( vertices_, hpv );
-  if(!hpv.isValid()) {
-    edm::LogError("MultShiftMETcorrInputProducer::produce") << "could not find vertex collection ";
+  try {
+    evt.getByLabel( vertices_, hpv );
+  } catch ( cms::Exception & e ) {
+    std::cout <<"[MultShiftMETcorrInputProducer] error: " << e.what() << std::endl;
   }
   std::vector<reco::Vertex> goodVertices;
   for (unsigned i = 0; i < hpv->size(); i++) {
@@ -85,7 +85,7 @@ void MultShiftMETcorrInputProducer::produce(edm::Event& evt, const edm::EventSet
   for (unsigned i=0;i<sumPt_.size();i++) sumPt_[i]=0.;
 
   edm::Handle<edm::View<reco::Candidate> > particleFlow;
-  evt.getByToken(pflow_, particleFlow);
+  evt.getByLabel(pflow_, particleFlow);
   for (unsigned i = 0; i < particleFlow->size(); ++i) {
     const reco::Candidate& c = particleFlow->at(i);
     for (unsigned j=0; j<type_.size(); j++) {

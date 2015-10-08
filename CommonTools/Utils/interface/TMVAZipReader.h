@@ -24,7 +24,6 @@
 #define TMVAZIPREADER_7RXIGO70
 
 #include "TMVA/Reader.h"
-#include "TMVA/IMethod.h"
 #include <string>
 
 namespace reco {
@@ -33,7 +32,7 @@ namespace reco {
     bool hasEnding(std::string const &fullString, std::string const &ending);
     char* readGzipFile(const std::string& weightFile);
 
-    TMVA::IMethod* loadTMVAWeights(TMVA::Reader* reader, const std::string& method,
+    void loadTMVAWeights(TMVA::Reader* reader, const std::string& method,
       const std::string& weightFile, bool verbose=false);
 
 

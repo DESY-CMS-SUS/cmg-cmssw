@@ -1,5 +1,3 @@
-#include <iomanip>
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "EventFilter/L1TRawToDigi/interface/Block.h"
@@ -12,7 +10,7 @@ namespace l1t {
    {
       if (type_ == MP7) {
          LogTrace("L1T") << "Writing MP7 link header";
-         return ((id_ & ID_mask) << ID_shift) | ((size_ & size_mask) << size_shift) | ((capID_ & capID_mask) << capID_shift);
+         return ((id_ & ID_mask) << ID_shift) | ((size_ & size_mask) << size_shift);
       }
       LogTrace("L1T") << "Writing CTP7 link header";
       return ((id_ & CTP7_mask) << CTP7_shift);
@@ -21,17 +19,8 @@ namespace l1t {
    std::auto_ptr<Block>
    Payload::getBlock()
    {
-      if (end_ - data_ < getHeaderSize()) {
-         LogDebug("L1T") << "Reached end of payload";
+      if (end_ - data_ < getHeaderSize())
          return std::auto_ptr<Block>();
-      }
-
-      if (data_[0] == 0xffffffff) {
-         LogDebug("L1T") << "Skipping padding word";
-         ++data_;
-         return getBlock();
-      }
-
       auto header = getHeader();
 
       if (end_ - data_ < header.getSize()) {
@@ -48,26 +37,18 @@ namespace l1t {
       return res;
    }
 
-   MP7Payload::MP7Payload(const uint32_t * data, const uint32_t * end, bool legacy_mc) : Payload(data, end)
+   MP7Payload::MP7Payload(const uint32_t * data, const uint32_t * end) : Payload(data, end)
    {
-      // For legacy MC (74 first MC campaigns) skip one empty word that was
-      // reserved for the header.  With data, read out infrastructure
-      // version and algorithm version.
-      if (legacy_mc) {
-         LogTrace("L1T") << "Skipping " << std::hex << *data_;
-         ++data_;
-      } else {
-         infra_ = data_[0];
-         algo_ = data_[1];
-         data_ += 2;
-      }
+      // FIXME extract firmware version here
+      // skip header for now
+      LogTrace("L1T") << "Skipping " << std::hex << *data_;
+      ++data_;
    }
 
    BlockHeader
    MP7Payload::getHeader()
    {
-      LogTrace("L1T") << "Getting header from " << std::hex << std::setw(8) << *data_;
-
+      LogTrace("L1T") << "Getting header from " << std::hex << *data_;
       return BlockHeader(data_++);
    }
 

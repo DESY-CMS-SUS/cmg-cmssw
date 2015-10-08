@@ -2,9 +2,10 @@
 #define RecoBTag_SoftLepton_ElectronTagger_h
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "CommonTools/Utils/interface/TMVAEvaluator.h"
 #include "RecoBTau/JetTagComputer/interface/JetTagComputer.h"
 #include "RecoBTag/SoftLepton/interface/LeptonSelector.h"
+#include "RecoBTag/SoftLepton/interface/MvaSoftElectronEstimator.h"
+#include <mutex>
 
 /** \class ElectronTagger
  *
@@ -17,19 +18,23 @@ class ElectronTagger : public JetTagComputer {
 public:
 
   /// explicit ctor 
-  ElectronTagger(const edm::ParameterSet & );
-  void initialize(const JetTagComputerRecord &) override;
+ ElectronTagger(const edm::ParameterSet & );
   virtual float discriminator(const TagInfoHelper & tagInfo) const override;
-
+//  std::vector<string> vecstr;
+//  string path_mvaWeightFileEleID;
 private:
-  const btag::LeptonSelector m_selector;
-  const bool m_useCondDB;
-  const std::string m_gbrForestLabel;
-  const edm::FileInPath m_weightFile;
-  const bool m_useGBRForest;
-  const bool m_useAdaBoost;
-
-  std::unique_ptr<TMVAEvaluator> mvaID;
+  btag::LeptonSelector m_selector;
+  edm::FileInPath WeightFile;
+  mutable std::mutex m_mutex;
+  std::unique_ptr<MvaSoftEleEstimator> mvaID;
 };
+
+ElectronTagger::ElectronTagger(const edm::ParameterSet & configuration):
+    m_selector(configuration)
+  {
+	uses("seTagInfos");
+	WeightFile=configuration.getParameter<edm::FileInPath>("weightFile");
+	mvaID.reset(new MvaSoftEleEstimator(WeightFile.fullPath()));
+  }
 
 #endif

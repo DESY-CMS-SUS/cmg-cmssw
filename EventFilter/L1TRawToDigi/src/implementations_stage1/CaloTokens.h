@@ -8,20 +8,12 @@
 #include "DataFormats/L1Trigger/interface/Tau.h"
 #include "DataFormats/L1Trigger/interface/CaloSpare.h"
 
-#include "DataFormats/L1CaloTrigger/interface/L1CaloEmCand.h"
-#include "DataFormats/L1TCalorimeter/interface/CaloEmCand.h"
-#include "DataFormats/L1CaloTrigger/interface/L1CaloRegion.h"
-#include "DataFormats/L1TCalorimeter/interface/CaloRegion.h"
-#include "DataFormats/L1CaloTrigger/interface/L1CaloRegionDetId.h"
-#include "DataFormats/L1CaloTrigger/interface/L1CaloCollections.h"
-
-
 
 #include "EventFilter/L1TRawToDigi/interface/PackerTokens.h"
 
 namespace l1t {
    namespace stage1 {
-      class CaloTokens : public PackerTokens {//getCaloRegions, getCaloEmCands
+      class CaloTokens : public PackerTokens {
          public:
             CaloTokens(const edm::ParameterSet&, edm::ConsumesCollector&);
 
@@ -33,8 +25,6 @@ namespace l1t {
             inline const edm::EDGetTokenT<TauBxCollection>& getIsoTauToken() const { return isotauToken_; };
             inline const edm::EDGetTokenT<CaloSpareBxCollection>& getCaloSpareHFBitCountsToken() const { return calospareHFBitCountsToken_; };
             inline const edm::EDGetTokenT<CaloSpareBxCollection>& getCaloSpareHFRingSumsToken() const { return calospareHFRingSumsToken_; };
-            inline const edm::EDGetTokenT<L1CaloRegionCollection>& getCaloRegionToken() const { return caloregionToken_; };
-            inline const edm::EDGetTokenT<L1CaloEmCollection>& getCaloEmCandToken() const { return caloemCandToken_; };
 
          private:
             edm::EDGetTokenT<CaloTowerBxCollection> towerToken_;
@@ -45,9 +35,6 @@ namespace l1t {
             edm::EDGetTokenT<TauBxCollection> isotauToken_;
             edm::EDGetTokenT<CaloSpareBxCollection> calospareHFBitCountsToken_;
             edm::EDGetTokenT<CaloSpareBxCollection> calospareHFRingSumsToken_;
-            edm::EDGetTokenT<L1CaloRegionCollection> caloregionToken_;
-            edm::EDGetTokenT<L1CaloEmCollection> caloemCandToken_;
-
       };
    }
 }

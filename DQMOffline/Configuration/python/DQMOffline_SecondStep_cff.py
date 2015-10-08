@@ -114,6 +114,4 @@ DQMHarvestEGamma = cms.Sequence( egammaPostProcessing )
 
 DQMHarvestBTag = cms.Sequence( bTagCollectorSequenceDATA )  
 
-HLTMonitoringClient = cms.Sequence()
-
 DQMHarvestMiniAOD = cms.Sequence( dataCertificationJetMETSequence )

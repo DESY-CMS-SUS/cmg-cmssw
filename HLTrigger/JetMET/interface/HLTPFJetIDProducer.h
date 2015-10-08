@@ -34,7 +34,6 @@ class HLTPFJetIDProducer : public edm::stream::EDProducer<> {
 
   private:
     double minPt_;
-    double maxEta_;
     double CHF_;              ///< charged hadron fraction
     double NHF_;              ///< neutral hadron fraction
     double CEF_;              ///< charged EM fraction

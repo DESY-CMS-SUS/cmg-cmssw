@@ -3,7 +3,6 @@
 #define GsfElectronBaseProducer_h
 
 #include "RecoEgamma/EgammaElectronAlgos/interface/GsfElectronAlgo.h"
-#include "RecoEgamma/EgammaElectronAlgos/interface/GsfElectronAlgoHeavyObjectCache.h"
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
@@ -26,22 +25,15 @@ namespace edm
 #include "RecoEgamma/EgammaElectronAlgos/interface/GsfElectronAlgo.h"
 #include "DataFormats/Common/interface/Handle.h"
 
-class GsfElectronBaseProducer : public edm::stream::EDProducer< edm::GlobalCache<gsfAlgoHelpers::HeavyObjectCache> >
+class GsfElectronBaseProducer : public edm::stream::EDProducer<>
  {
   public:
 
     static void fillDescription( edm::ParameterSetDescription & ) ;
 
-    explicit GsfElectronBaseProducer( const edm::ParameterSet &, const gsfAlgoHelpers::HeavyObjectCache* ) ;
+    explicit GsfElectronBaseProducer( const edm::ParameterSet & ) ;
     virtual ~GsfElectronBaseProducer() ;
 
-    static std::unique_ptr<gsfAlgoHelpers::HeavyObjectCache> 
-    initializeGlobalCache( const edm::ParameterSet& conf ) {
-       return std::unique_ptr<gsfAlgoHelpers::HeavyObjectCache>(new gsfAlgoHelpers::HeavyObjectCache(conf));
-   }
-  
-  static void globalEndJob(gsfAlgoHelpers::HeavyObjectCache const* ) {
-  }
 
   protected:
 

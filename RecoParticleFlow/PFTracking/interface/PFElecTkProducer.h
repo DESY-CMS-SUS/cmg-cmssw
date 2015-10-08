@@ -25,8 +25,6 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/ParticleFlowReco/interface/PFDisplacedTrackerVertex.h"
 
-#include "RecoParticleFlow/PFTracking/interface/ConvBremHeavyObjectCache.h"
-
 class PFTrackTransformer;
 class GsfTrack;
 class MagneticField;
@@ -43,22 +41,11 @@ class ConvBremPFTrackFinder;
  and transform them in PFGsfRecTracks.
 */
 
-
-
-class PFElecTkProducer final : public edm::stream::EDProducer<edm::GlobalCache<convbremhelpers::HeavyObjectCache> > {
+class PFElecTkProducer final : public edm::stream::EDProducer<> {
  public:
   
      ///Constructor
-  explicit PFElecTkProducer(const edm::ParameterSet&, const convbremhelpers::HeavyObjectCache*);
-
-
-  static std::unique_ptr<convbremhelpers::HeavyObjectCache> 
-    initializeGlobalCache( const edm::ParameterSet& conf ) {
-       return std::unique_ptr<convbremhelpers::HeavyObjectCache>(new convbremhelpers::HeavyObjectCache(conf));
-   }
-  
-  static void globalEndJob(convbremhelpers::HeavyObjectCache const* ) {
-  }
+     explicit PFElecTkProducer(const edm::ParameterSet&);
 
      ///Destructor
      ~PFElecTkProducer();
@@ -133,10 +120,10 @@ class PFElecTkProducer final : public edm::stream::EDProducer<edm::GlobalCache<c
       double dphiCutGsfClean_;
 
       ///PFTrackTransformer
-      std::unique_ptr<PFTrackTransformer> pfTransformer_;     
+      PFTrackTransformer *pfTransformer_;     
       const MultiTrajectoryStateMode *mtsMode_;
       MultiTrajectoryStateTransform  mtsTransform_;
-      std::unique_ptr<ConvBremPFTrackFinder> convBremFinder_;
+      ConvBremPFTrackFinder *convBremFinder_;
 
 
       ///Trajectory of GSfTracks in the event?

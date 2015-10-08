@@ -139,8 +139,7 @@ void DTDigiTask::bookHistograms(DQMStore::IBooker & ibooker, edm::Run const & ru
     ibooker.setCurrentFolder(topFolder());
     for(int wh = -2; wh <= 2; ++wh) { // loop over wheels
       if(doAllHitsOccupancies) bookHistos(ibooker, wh,string("Occupancies"),"OccupancyAllHits");
-
-      if(doNoiseOccupancies) bookHistos(ibooker, wh,string("Occupancies"),"OccupancyNoise");
+      if(doNoiseOccupancies) bookHistos(ibooker, wh,string("Occupancies"),"OccupancyNoiseHits");
       if(doInTimeOccupancies) bookHistos(ibooker, wh,string("Occupancies"),"OccupancyInTimeHits");
 
       if(lookForSyncNoise || filterSyncNoise) {
@@ -667,12 +666,12 @@ void DTDigiTask::analyze(const edm::Event& event, const edm::EventSetup& c) {
                 (layer_number+(superlayer_number-1)*4)-1);
 
             // Fill the chamber occupancy
-
             histoTag = "OccupancyNoise";
             map<int, MonitorElement*>::const_iterator histoPerWheel =
               wheelHistos[histoTag].find(dtChId.wheel());
 
             histoPerWheel->second->Fill(dtChId.sector(),dtChId.station()); // FIXME: normalize to # of layers
+
           }
         }
 

@@ -109,7 +109,6 @@ class MuonRecoAnalyzer : public DQMEDAnalyzer {
   std::vector<MonitorElement*> oneOverptResolution;
   std::vector<MonitorElement*> rhAnalysis;
   std::vector<MonitorElement*> muVStkSytemRotation;
-  std::vector<MonitorElement*> phiVsetaGlbTrack;
 
  
   MonitorElement* tunePResolution;

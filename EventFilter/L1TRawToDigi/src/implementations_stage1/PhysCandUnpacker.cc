@@ -6,34 +6,39 @@
 
 template<typename T, typename F>
 bool
-process(const l1t::Block& block, BXVector<T> * coll, F modify, bool isleft, bool isfirst,bool istau) {
+process(const l1t::Block& block, BXVector<T> * coll, F modify) {
    LogDebug("L1T") << "Block ID  = " << block.header().getID() << " size = " << block.header().getSize();
 
-   int nBX, firstBX, lastBX;
-   nBX = int(ceil(block.header().getSize() / 2.)); 
-   l1t::getBXRange(nBX, firstBX, lastBX);
+   int nBX = int(ceil(block.header().getSize() / 2.)); 
+
+   // Find the first and last BXs
+   int firstBX = -(ceil((double)nBX/2.)-1);
+   int lastBX;
+   if (nBX % 2 == 0) {
+      lastBX = ceil((double)nBX/2.)+1;
+   } else {
+      lastBX = ceil((double)nBX/2.);
+   }
 
    coll->setBXRange(firstBX, lastBX);
 
-   LogDebug("L1T")  << "nBX = " << nBX << " first BX = " << firstBX << " lastBX = " << lastBX;
+   LogDebug("L1T") << "nBX = " << nBX << " first BX = " << firstBX << " lastBX = " << lastBX;
 
    // Initialise index
    int unsigned i = 0;
 
    // Loop over multiple BX and then number of jets filling jet collection
-   for (int bx=firstBX; bx<=lastBX; bx++){
-      
-      if(!istau)coll->resize(bx,8);
-      else coll->resize(bx,4);
-      
+   for (int bx=firstBX; bx<lastBX; bx++){
       uint32_t raw_data0 = block.payload()[i++];
       uint32_t raw_data1 = block.payload()[i++];        
 
-      uint16_t candbit[2];
+      uint16_t candbit[4];
       candbit[0] = raw_data0 & 0xFFFF;
-      candbit[1] = raw_data1 & 0xFFFF;
+      candbit[1] = (raw_data0 >> 16) & 0xFFFF;
+      candbit[2] = raw_data1 & 0xFFFF;
+      candbit[3] = (raw_data1 >> 16) & 0xFFFF;
 
-      for (int icand=0;icand<2;icand++){
+      for (int icand=0;icand<4;icand++){
 
          int candPt=candbit[icand] & 0x3F;
          int candEta=(candbit[icand]>>6 ) & 0x7;
@@ -50,23 +55,7 @@ process(const l1t::Block& block, BXVector<T> * coll, F modify, bool isleft, bool
 
          /* std::cout << "cand: eta " << cand.hwEta() << " phi " << cand.hwPhi() << " pT " << cand.hwPt() << " qual " << cand.hwQual() << std::endl; */
          //std::cout << cand.hwPt() << " @ " << cand.hwEta() << ", " << cand.hwPhi() << " > " << cand.hwQual() << " > " << cand.hwIso() << std::endl;
-         
-         if(isfirst){
-           if(isleft){
-             coll->set(bx, 2*icand,modify(cand));
-           }
-           else if (!isleft){
-             coll->set(bx, 2*icand+1,modify(cand));
-           }
-         }
-         else if (!isfirst){
-           if(isleft){
-             coll->set(bx, 2*icand+4,modify(cand));
-           }
-           else if (!isleft){
-             coll->set(bx, 2*icand+5,modify(cand));       
-           }
-         }
+         coll->push_back(bx, modify(cand));
       }
    }
 
@@ -75,66 +64,35 @@ process(const l1t::Block& block, BXVector<T> * coll, F modify, bool isleft, bool
 
 namespace l1t {
   namespace stage1 {
-    class IsoEGammaUnpackerLeft : public Unpacker {
+    class IsoEGammaUnpacker : public Unpacker {
       public:
         virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
     };
 
-    class NonIsoEGammaUnpackerLeft : public Unpacker {
+    class NonIsoEGammaUnpacker : public Unpacker {
       public:
         virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
     };
 
-    class CentralJetUnpackerLeft : public Unpacker {
+    class CentralJetUnpacker : public Unpacker {
       public:
         virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
     };
 
-    class ForwardJetUnpackerLeft : public Unpacker {
+    class ForwardJetUnpacker : public Unpacker {
       public:
         virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
     };
 
-    class TauUnpackerLeft : public Unpacker {
+    class TauUnpacker : public Unpacker {
        public:
         virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
     };
 
-    class IsoTauUnpackerLeft : public Unpacker {
+    class IsoTauUnpacker : public Unpacker {
        public:
         virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
     };
-
-    class IsoEGammaUnpackerRight : public Unpacker {
-      public:
-        virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
-    };
-
-    class NonIsoEGammaUnpackerRight : public Unpacker {
-      public:
-        virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
-    };
-
-    class CentralJetUnpackerRight : public Unpacker {
-      public:
-        virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
-    };
-
-    class ForwardJetUnpackerRight : public Unpacker {
-      public:
-        virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
-    };
-
-    class TauUnpackerRight : public Unpacker {
-       public:
-        virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
-    };
-
-    class IsoTauUnpackerRight : public Unpacker {
-       public:
-        virtual bool unpack(const Block& block, UnpackerCollections *coll) override;
-    };
-
   }
 }
 
@@ -143,100 +101,60 @@ namespace l1t {
 namespace l1t {
   namespace stage1 {
     bool
-    IsoEGammaUnpackerLeft::unpack(const Block& block, UnpackerCollections *coll)
+    IsoEGammaUnpacker::unpack(const Block& block, UnpackerCollections *coll)
     {
        auto res = static_cast<CaloCollections*>(coll)->getEGammas();
-       return process(block, res, [](l1t::EGamma eg) { eg.setHwIso(1); return eg; },true,true,false);
+       return process(block, res, [](l1t::EGamma eg) { eg.setHwIso(1); return eg; });
     }
 
     bool
-    NonIsoEGammaUnpackerLeft::unpack(const Block& block, UnpackerCollections *coll)
+    NonIsoEGammaUnpacker::unpack(const Block& block, UnpackerCollections *coll)
     {
        auto res = static_cast<CaloCollections*>(coll)->getEGammas();
-       return process(block, res, [](const l1t::EGamma& eg) { return eg; },true,false,false);
+       return process(block, res, [](const l1t::EGamma& eg) { return eg; });
     }
 
     bool
-    CentralJetUnpackerLeft::unpack(const Block& block, UnpackerCollections *coll)
+    CentralJetUnpacker::unpack(const Block& block, UnpackerCollections *coll)
     {
        auto res = static_cast<CaloCollections*>(coll)->getJets();
-       return process(block, res, [](const l1t::Jet& j) { return j; },true,true,false);
+
+       if (res->size(0) != 0)
+          edm::LogWarning("L1T") << "Need to unpack central jets before forward ones";
+
+       return process(block, res, [](const l1t::Jet& j) { return j; });
     }
 
     bool
-    ForwardJetUnpackerLeft::unpack(const Block& block, UnpackerCollections *coll)
+    ForwardJetUnpacker::unpack(const Block& block, UnpackerCollections *coll)
     {
        auto res = static_cast<CaloCollections*>(coll)->getJets();
-       return process(block, res, [](l1t::Jet j) { j.setHwQual(j.hwQual() | 2); return j; },true,false,false);
+
+       if (res->size(0) != 4)
+          edm::LogWarning("L1T") << "Need to unpack central jets before forward ones";
+
+       return process(block, res, [](l1t::Jet j) { j.setHwQual(j.hwQual() | 2); return j; });
     }
 
     bool
-    TauUnpackerLeft::unpack(const Block& block, UnpackerCollections *coll)
+    TauUnpacker::unpack(const Block& block, UnpackerCollections *coll)
     {
        auto res = static_cast<CaloCollections*>(coll)->getTaus();
-       return process(block, res, [](const l1t::Tau& t) { return t; },true,true,true);
+       return process(block, res, [](const l1t::Tau& t) { return t; });
     }
 
     bool
-    IsoTauUnpackerLeft::unpack(const Block& block, UnpackerCollections *coll)
+    IsoTauUnpacker::unpack(const Block& block, UnpackerCollections *coll)
     {
        auto res = static_cast<CaloCollections*>(coll)->getIsoTaus();
-       return process(block, res, [](const l1t::Tau& t) { return t; },true,true,true);
-    }
-
-    bool
-    IsoEGammaUnpackerRight::unpack(const Block& block, UnpackerCollections *coll)
-    {
-       auto res = static_cast<CaloCollections*>(coll)->getEGammas();
-       return process(block, res, [](l1t::EGamma eg) { eg.setHwIso(1); return eg; },false,true,false);
-    }
-
-    bool
-    NonIsoEGammaUnpackerRight::unpack(const Block& block, UnpackerCollections *coll)
-    {
-       auto res = static_cast<CaloCollections*>(coll)->getEGammas();
-       return process(block, res, [](const l1t::EGamma& eg) { return eg; },false,false,false);
-    }
-
-    bool
-    CentralJetUnpackerRight::unpack(const Block& block, UnpackerCollections *coll)
-    {
-       auto res = static_cast<CaloCollections*>(coll)->getJets();
-       return process(block, res, [](const l1t::Jet& j) { return j; },false,true,false);
-    }
-
-    bool
-    ForwardJetUnpackerRight::unpack(const Block& block, UnpackerCollections *coll)
-    {
-       auto res = static_cast<CaloCollections*>(coll)->getJets();
-       return process(block, res, [](l1t::Jet j) { j.setHwQual(j.hwQual() | 2); return j; },false,false,false);
-    }
-
-    bool
-    TauUnpackerRight::unpack(const Block& block, UnpackerCollections *coll)
-    {
-       auto res = static_cast<CaloCollections*>(coll)->getTaus();
-       return process(block, res, [](const l1t::Tau& t) { return t; },false,true,true);
-    }
-
-    bool
-    IsoTauUnpackerRight::unpack(const Block& block, UnpackerCollections *coll)
-    {
-       auto res = static_cast<CaloCollections*>(coll)->getIsoTaus();
-       return process(block, res, [](const l1t::Tau& t) { return t; },false,true,true);
+       return process(block, res, [](const l1t::Tau& t) { return t; });
     }
   }
 }
 
-DEFINE_L1T_UNPACKER(l1t::stage1::IsoEGammaUnpackerLeft);
-DEFINE_L1T_UNPACKER(l1t::stage1::NonIsoEGammaUnpackerLeft);
-DEFINE_L1T_UNPACKER(l1t::stage1::CentralJetUnpackerLeft);
-DEFINE_L1T_UNPACKER(l1t::stage1::ForwardJetUnpackerLeft);
-DEFINE_L1T_UNPACKER(l1t::stage1::TauUnpackerLeft);
-DEFINE_L1T_UNPACKER(l1t::stage1::IsoTauUnpackerLeft);
-DEFINE_L1T_UNPACKER(l1t::stage1::IsoEGammaUnpackerRight);
-DEFINE_L1T_UNPACKER(l1t::stage1::NonIsoEGammaUnpackerRight);
-DEFINE_L1T_UNPACKER(l1t::stage1::CentralJetUnpackerRight);
-DEFINE_L1T_UNPACKER(l1t::stage1::ForwardJetUnpackerRight);
-DEFINE_L1T_UNPACKER(l1t::stage1::TauUnpackerRight);
-DEFINE_L1T_UNPACKER(l1t::stage1::IsoTauUnpackerRight);
+DEFINE_L1T_UNPACKER(l1t::stage1::IsoEGammaUnpacker);
+DEFINE_L1T_UNPACKER(l1t::stage1::NonIsoEGammaUnpacker);
+DEFINE_L1T_UNPACKER(l1t::stage1::CentralJetUnpacker);
+DEFINE_L1T_UNPACKER(l1t::stage1::ForwardJetUnpacker);
+DEFINE_L1T_UNPACKER(l1t::stage1::TauUnpacker);
+DEFINE_L1T_UNPACKER(l1t::stage1::IsoTauUnpacker);

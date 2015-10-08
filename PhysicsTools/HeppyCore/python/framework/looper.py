@@ -9,8 +9,6 @@ import pprint
 from math import ceil
 from event import Event
 import timeit
-import resource
-import json
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -55,8 +53,7 @@ class Looper(object):
                   firstEvent=0,
                   nPrint=0,
                   timeReport=False,
-                  quiet=False,
-                  memCheckFromEvent=-1):
+                  quiet=False):
         """Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
         in sequence. The Looper can then be used to process an event,
@@ -87,8 +84,6 @@ class Looper(object):
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
         self.timeReport = [ {'time':0.0,'events':0} for a in self.analyzers ] if timeReport else False
-        self.memReportFirstEvent = memCheckFromEvent
-        self.memLast=0
         tree_name = None
         if( hasattr(self.cfg_comp, 'tree_name') ):
             tree_name = self.cfg_comp.tree_name
@@ -230,17 +225,7 @@ class Looper(object):
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop(self.setup)
             start = timeit.default_timer()
-            if self.memReportFirstEvent >=0 and iEv >= self.memReportFirstEvent:           
-                memNow=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-                if memNow > self.memLast :
-                   print  "Mem Jump detected before analyzer %s at event %s. RSS(before,after,difference) %s %s %s "%( analyzer.name, iEv, self.memLast, memNow, memNow-self.memLast)
-                self.memLast=memNow
             ret = analyzer.process( self.event )
-            if self.memReportFirstEvent >=0 and iEv >= self.memReportFirstEvent:           
-                memNow=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-                if memNow > self.memLast :
-                   print "Mem Jump detected in analyzer %s at event %s. RSS(before,after,difference) %s %s %s "%( analyzer.name, iEv, self.memLast, memNow, memNow-self.memLast)
-                self.memLast=memNow
             if self.timeReport:
                 self.timeReport[i]['events'] += 1
                 if self.timeReport[i]['events'] > 0:
@@ -266,31 +251,17 @@ if __name__ == '__main__':
     import pickle
     import sys
     import os
-    from PhysicsTools.HeppyCore.framework.heppy_loop import _heppyGlobalOptions
-    from optparse import OptionParser
-    parser = OptionParser(usage='%prog cfgFileName compFileName [--options=optFile.json]')
-    parser.add_option('--options',dest='options',default='',help='options json file')
-    (options,args) = parser.parse_args()
-
-    if options.options!='':
-        jsonfilename = options.options
-        jfile = open (jsonfilename, 'r')
-        opts=json.loads(jfile.readline())
-        for k,v in opts.iteritems():
-            _heppyGlobalOptions[k]=v
-        jfile.close()
-
-    if len(args) == 1 :
-        cfgFileName = args[0]
+    if len(sys.argv) == 2 :
+        cfgFileName = sys.argv[1]
         pckfile = open( cfgFileName, 'r' )
         config = pickle.load( pckfile )
         comp = config.components[0]
         events_class = config.events_class
-    elif len(args) == 2 :
-        cfgFileName = args[0]
+    elif len(sys.argv) == 3 :
+        cfgFileName = sys.argv[1]
         file = open( cfgFileName, 'r' )
         cfg = imp.load_source( 'cfg', cfgFileName, file)
-        compFileName = args[1]
+        compFileName = sys.argv[2]
         pckfile = open( compFileName, 'r' )
         comp = pickle.load( pckfile )
         cfg.config.components=[comp]

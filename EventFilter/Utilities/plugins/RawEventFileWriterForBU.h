@@ -62,10 +62,8 @@ class RawEventFileWriterForBU
   IntJ perLumiFileCount_;
   IntJ perLumiTotalEventCount_;
   IntJ perLumiLostEventCount_;
-  IntJ perLumiSize_;
 
   IntJ perFileEventCount_;
-  IntJ perFileSize_;
 
   FastMonitor* fileMon_ = nullptr;
   FastMonitor* lumiMon_ = nullptr;

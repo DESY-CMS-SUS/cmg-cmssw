@@ -1,5 +1,3 @@
-import socket
-
 '''Helper procedure that loads mva inputs from database'''
 from CondCore.DBCommon.CondDBSetup_cfi import *
 
@@ -11,9 +9,6 @@ loadRecoTauTagMVAsFromPrepDB = cms.ESSource("PoolDBESSource",
     connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000') # prod database
     #connect = cms.string('sqlite_file:/home/dqmdevlocal/CMSSW_7_4_2_official/src/DQM/Integration/python/test/RecoTauTag_MVAs_2014Jul07.db')
 )
-
-if socket.getfqdn().find('.cms') != -1:
-    loadRecoTauTagMVAsFromPrepDB.connect = cms.string('frontier://(proxyurl=http://localhost:3128)(serverurl=http://localhost:8000/FrontierOnProd)(serverurl=http://localhost:8000/FrontierOnProd)(retrieve-ziplevel=0)(failovertoserver=no)/CMS_COND_PAT_000')
 
 # register tau ID (= isolation) discriminator MVA
 tauIdDiscrMVA_trainings = {

@@ -252,13 +252,11 @@ void PFTauPrimaryVertexProducer::produce(edm::Event& iEvent,const edm::EventSetu
 // 	}
 	
 	for(std::vector<reco::TrackBaseRef>::const_iterator vtxTrkRef=thePV.tracks_begin();vtxTrkRef<thePV.tracks_end();vtxTrkRef++){
-	  bool matched = false;
 	  for (unsigned int sigTrk = 0; sigTrk < SignalTracks.size(); sigTrk++) {
-	    if ( (*vtxTrkRef) == SignalTracks[sigTrk] ) {
-	      matched = true;
+	    if((*vtxTrkRef)!=SignalTracks[sigTrk] ){
+	      nonTauTracks.push_back(**vtxTrkRef);
 	    }
-	  }
-	  if ( !matched ) nonTauTracks.push_back(**vtxTrkRef);
+          }
 	}   
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Refit the vertex
@@ -268,7 +266,7 @@ void PFTauPrimaryVertexProducer::produce(edm::Event& iEvent,const edm::EventSetu
 	  transTracks.push_back(transTrackBuilder->build(*iter));
 	}
 	bool FitOk(true);
-	if ( transTracks.size() >= 2 ) {
+	if ( transTracks.size() >= 3 ) {
 	  AdaptiveVertexFitter avf;
 	  avf.setWeightThreshold(0.1); //weight per track. allow almost every fit, else --> exception
 	  try {

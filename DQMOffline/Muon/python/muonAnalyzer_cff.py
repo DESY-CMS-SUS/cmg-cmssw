@@ -17,9 +17,7 @@ muonAnalyzer = cms.Sequence(muonEnergyDepositAnalyzer*
                             staMuonSegmentAnalyzer*
                             muonKinVsEtaAnalyzer*
                             diMuonHistos*
-                            LooseMuonEfficiencyAnalyzer*
-                            MediumMuonEfficiencyAnalyzer*
-                            TightMuonEfficiencyAnalyzer*
+                            muonEfficiencyAnalyzer*
                             muonPFsequence*
                             muonRecoOneHLT)
 
@@ -30,7 +28,5 @@ muonAnalyzer_noHLT = cms.Sequence(muonEnergyDepositAnalyzer*
                                   staMuonSegmentAnalyzer*
                                   muonKinVsEtaAnalyzer*
                                   diMuonHistos*
-                                  LooseMuonEfficiencyAnalyzer*
-                                  MediumMuonEfficiencyAnalyzer*
-                                  TightMuonEfficiencyAnalyzer*                                
+                                  muonEfficiencyAnalyzer*
                                   muonPFsequence)

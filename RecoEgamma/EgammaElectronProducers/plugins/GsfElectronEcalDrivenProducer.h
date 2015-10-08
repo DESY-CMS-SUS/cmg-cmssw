@@ -10,7 +10,7 @@ class GsfElectronEcalDrivenProducer : public GsfElectronBaseProducer
 
     //static void fillDescriptions( edm::ConfigurationDescriptions & ) ;
 
-    explicit GsfElectronEcalDrivenProducer( const edm::ParameterSet &, const gsfAlgoHelpers::HeavyObjectCache* ) ;
+    explicit GsfElectronEcalDrivenProducer( const edm::ParameterSet & ) ;
     virtual ~GsfElectronEcalDrivenProducer() ;
     virtual void produce( edm::Event &, const edm::EventSetup & ) ;
 

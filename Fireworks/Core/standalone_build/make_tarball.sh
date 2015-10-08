@@ -12,7 +12,7 @@ getExternals()
 	echo "Copy gcc subdirs"
     scram tool tag gcc-ccompiler GCC_CCOMPILER_BASE
     gccd_src=`scram tool tag gcc-ccompiler GCC_CCOMPILER_BASE`
-
+set -x
     gccd_target=${tard}/external/gcc
     mkdir $gccd_target
 	cp -a $gccd_src/include $gccd_target
@@ -23,6 +23,7 @@ getExternals()
     else
        cp -a $gccd_src/lib64 $gccd_target/lib64
     fi
+    exit
     echo "=========================================================="
     echo "=========================================================="
 
@@ -50,6 +51,7 @@ getExternals()
         cp -a $ext/$i/$ever/lib/* ${extdl}
     done
 
+    
     echo "=========================================================="
     echo "=========================================================="
     echo "Copying external headers."
@@ -165,7 +167,6 @@ getFireworksSources()
 
 getCmsLibs()
 {
-mkdir -p $tard/lib
     echo "=========================================================="
     echo "=========================================================="
     echo "get CMS libs"
@@ -176,8 +177,6 @@ mkdir -p $tard/lib
     fi
 
     cat $fwl | grep -v '\.h$' >  ${fwl}tmp
-
-
     # remove package without libs
     perl -i -ne 'print unless /Fireworks\/Macros/'         ${fwl}tmp
     perl -i -ne 'print unless /FWCore\/PythonUtilities/'   ${fwl}tmp
@@ -188,12 +187,10 @@ mkdir -p $tard/lib
     libl=`cat ${fwl}tmp |  perl -ne 'if( ~/(.+)\/(.+)$/){print "$1$2 ";}'`
     libl_extra=`echo $extra_list | perl -pe '{ s/\///og;}'`
 
-
     echo "get FWLite libraries"
 
     cn=${tard}/lib/.edmplugincache;
     for i in $libl $libl_extra; do
-       echo "get $i ..............."
        if [ -e  $CMSSW_BASE/lib/$SCRAM_ARCH/lib${i}.$libext ]; then
 	      cp -f $CMSSW_BASE/lib/$SCRAM_ARCH/*${i}* $tard/lib
        else
@@ -325,16 +322,16 @@ else
    fwl=$fwlite_list
 fi
 extra_list="/CondFormats/Serialization /Geometry/CommonDetUnit /DataFormats/MuonSeed"
-getCmsLibs
-exit
+
+
 getExternals
 getCmsSources
 getFireworksSources
 
-
+mkdir -p ${tard}/lib
 getCmsLibs
 
-cp /usr/include/wchar.h $tard/external/var-inc
+
 getDataFiles
 echo $tard
 if [ -n "$doTar" ] ; then

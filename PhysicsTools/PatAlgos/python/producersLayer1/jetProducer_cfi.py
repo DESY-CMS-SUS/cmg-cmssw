@@ -45,8 +45,7 @@ patJets = cms.EDProducer("PATJetProducer",
         cms.InputTag("pfSimpleSecondaryVertexHighPurBJetTags"),
         cms.InputTag("pfCombinedSecondaryVertexV2BJetTags"),
         cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
-        cms.InputTag("softPFMuonBJetTags"),
-        cms.InputTag("softPFElectronBJetTags"),
+        cms.InputTag("pfCombinedSecondaryVertexSoftLeptonBJetTags"),
         cms.InputTag("pfCombinedMVABJetTags")
     ),
     # clone tag infos ATTENTION: these take lots of space!
@@ -75,7 +74,7 @@ patJets = cms.EDProducer("PATJetProducer",
     # jet flavour idetification configurables
     getJetMCFlavour    = cms.bool(True),
     useLegacyJetMCFlavour = cms.bool(False),
-    addJetFlavourInfo  = cms.bool(True),
+    addJetFlavourInfo  = cms.bool(False),
     JetPartonMapSource = cms.InputTag("patJetFlavourAssociationLegacy"),
     JetFlavourInfoSource = cms.InputTag("patJetFlavourAssociation"),
     # efficiencies

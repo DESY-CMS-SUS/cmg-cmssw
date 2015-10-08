@@ -18,7 +18,6 @@ from HLTriggerOffline.Common.HLTValidation_cff import *
 
 from Validation.RecoMET.METRelValForDQM_cff import *
 from Validation.RecoJets.JetValidation_cff import *
-from JetMETCorrections.Type1MET.pfMETCorrectionType0_cfi import *
 from Validation.TrackingMCTruth.trackingTruthValidation_cfi import *
 from Validation.RecoTrack.TrackValidation_cff import *
 from Validation.RecoMuon.muonValidation_cff import *
@@ -32,7 +31,7 @@ from Validation.RecoParticleFlow.miniAODValidation_cff import *
 prevalidation = cms.Sequence( globalPrevalidation * hltassociation * metPreValidSeq * jetPreValidSeq )
 prevalidationLiteTracking = cms.Sequence( prevalidation )
 prevalidationLiteTracking.replace(globalPrevalidation,globalPrevalidationLiteTracking)
-prevalidationMiniAOD = cms.Sequence( genParticles1 * miniAODValidationSequence * JetValidationMiniAOD * type0PFMEtCorrectionPFCandToVertexAssociationForValidationMiniAOD )
+prevalidationMiniAOD = cms.Sequence( genParticles1 * miniAODValidationSequence * JetValidationMiniAOD )
 
 
 validation = cms.Sequence(cms.SequencePlaceholder("mix")

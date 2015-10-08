@@ -3,16 +3,9 @@ from PhysicsTools.Heppy.analyzers.core.all import *
 from PhysicsTools.Heppy.analyzers.objects.all import *
 from PhysicsTools.Heppy.analyzers.gen.all import *
 from CMGTools.VVResonances.analyzers.LNuJJ import *
-from CMGTools.VVResonances.analyzers.LLJJ import *
-from CMGTools.VVResonances.analyzers.JJ import *
-from CMGTools.VVResonances.analyzers.MultiFinalState  import *
-from CMGTools.VVResonances.analyzers.PackedCandidateLoader import *
 from CMGTools.VVResonances.analyzers.LeptonicVMaker import *
 from CMGTools.VVResonances.analyzers.Skimmer import *
-from CMGTools.VVResonances.tools.leptonID  import muonID,electronID
 import os
-
-
 
 
 
@@ -20,11 +13,6 @@ import os
 eventSelector = cfg.Analyzer(
     EventSelector,name="EventSelector",
     toSelect = []  # here put the event numbers (actual event numbers from CMSSW)
-    )
-
-skimAnalyzer = cfg.Analyzer(
-    SkimAnalyzerCount, name='skimAnalyzerCount',
-    useLumiBlocks = False,
     )
 
 # Apply json file (if the dataset has one)
@@ -43,6 +31,7 @@ triggerFlagsAna = cfg.Analyzer(
     TriggerBitAnalyzer, name="TriggerFlags",
     processName = 'HLT',
     triggerBits = {
+        # "<name>" : [ 'HLT_<Something>_v*', 'HLT_<SomethingElse>_v*' ] 
     }
     )
 
@@ -127,32 +116,32 @@ lepAna = cfg.Analyzer(
     doSegmentBasedMuonCleaning=False,
     # inclusive very loose muon selection
     inclusive_muon_id  = "",
-    inclusive_muon_pt  = 35.0,
+    inclusive_muon_pt  = 15.0,
     inclusive_muon_eta = 2.4,
-    inclusive_muon_dxy = 0.2,
-    inclusive_muon_dz  = 0.2,
+    inclusive_muon_dxy = 0.5,
+    inclusive_muon_dz  = 1.0,
     muon_dxydz_track = "innerTrack",
     # loose muon selection
-    loose_muon_id     = "",
-    loose_muon_pt     = 35.0,
+    loose_muon_id     = "POG_ID_Loose",
+    loose_muon_pt     = 15.0,
     loose_muon_eta    = 2.4,
-    loose_muon_dxy    = 0.02,
+    loose_muon_dxy    = 0.05,
     loose_muon_dz     = 0.2,
-    loose_muon_isoCut = muonID,
+    loose_muon_relIso = 10.0,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
-    inclusive_electron_pt  = 35.0,
+    inclusive_electron_pt  = 20.0,
     inclusive_electron_eta = 2.5,
-    inclusive_electron_dxy = 0.02,
-    inclusive_electron_dz  = 0.2,
+    inclusive_electron_dxy = 0.5,
+    inclusive_electron_dz  = 1.0,
     inclusive_electron_lostHits = 1.0,
     # loose electron selection
-    loose_electron_id     = "",
-    loose_electron_pt     = 35.0,
+    loose_electron_id     = "POG_Cuts_ID_2012_Veto_full5x5",
+    loose_electron_pt     = 20.0,
     loose_electron_eta    = 2.5,
-    loose_electron_dxy    = 0.02,
-    loose_electron_dz     = 0.2,
-    loose_electron_isoCut = electronID,
+    loose_electron_dxy    = 0.05,
+    loose_electron_dz     = 0.1,
+    loose_electron_relIso = 10.0,
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta",
@@ -206,6 +195,7 @@ tauAna = cfg.Analyzer(
 
 
 
+
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     metCollection     = "slimmedMETs",
@@ -228,48 +218,29 @@ metAna = cfg.Analyzer(
 
 leptonicVAna = cfg.Analyzer(
     LeptonicVMaker,
-    name='leptonicVMaker',
-    selectLNuPair=(lambda x: x.pt()>200.0),
-    selectLLPair=(lambda x: x.mass()>70.0 and x.mass()<110.0 and x.pt()>100.0)
+    name='laptonicVMaker',
+    zMassLimits = [40.,160.],
+    wMTLimits = [0.,300.]
     )
 
 
-packedAna = cfg.Analyzer(
-    PackedCandidateLoader,
-    name = 'PackedCandidateLoader'
 
-)
 
-multiStateAna = cfg.Analyzer(
-    MultiFinalState,
-    name='MultiFinalStateMaker',
+lnuJJAna = cfg.Analyzer(
+    LNuJJ,
+    name='LNuJJMaker',
     ktPowerFat = -1.0,
     rFat = 0.8,
     massdrop=True,
     subjets=2,
-    doCHS = True,
     prunning=False,
     softdrop = True,
-    selectFat = (lambda x: x.pt()>100.0 and abs(x.eta())<2.4 and len(x.subjets)==2 and x.softDropJet.mass()>10.0) ,
+    selectFat = (lambda x: x.pt()>100.0 and abs(x.eta())<2.4 and len(x.subjets)==2 and x.softDropJet.mass()>20.0),
     ktPower=-1.0,
     r = 0.4,
-    selectPairLL = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
-    selectPairLNu = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
-    selectPairJJ = (lambda x: x.mass()>1000.0 and x.deltaPhi()>1.5 ),
+    selectPair = (lambda x: x.mass()>800.0 ),
+    doCHS = True,
     suffix = '',
-    recalibrateJets = True, # True, False, 'MC', 'Data'
-    recalibrationType = "AK4PFchs",
-#    mcGT     = "Summer15_50nsV5_MC",
-#    dataGT     = "Summer15_50nsV5_DATA",
-    jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
-    shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
-    rho = ('fixedGridRhoFastjetAll','',''),
-    attachBTag = True,
-    btagDiscriminator = "pfCombinedInclusiveSecondaryVertexV2BJetTags",
-    standardJets = 'slimmedJets',
-    fatJets = 'slimmedJetsAK8',
-    subJets = 'slimmedJetsAK8PFCHSSoftDropPacked',
-    doSkim = True
     )
 
 
@@ -278,7 +249,6 @@ multiStateAna = cfg.Analyzer(
 
 coreSequence = [
    #eventSelector,
-    skimAnalyzer,
     jsonAna,
     triggerAna,
     pileUpAna,
@@ -290,8 +260,7 @@ coreSequence = [
     leptonicVAna,
     tauAna,
     triggerFlagsAna,
-    packedAna,
-    multiStateAna
-#    eventFlagsAna
+    lnuJJAna,
+    eventFlagsAna
     
 ]

@@ -6,13 +6,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 vvSkimmer = cfg.Analyzer(
     Skimmer,
     name='vvSkimmer',
-    required = ['LNuJJ','JJ','LLJJ']
-)
-
-leptonSkimmer = cfg.Analyzer(
-    Skimmer,
-    name='leptonSkimmer',
-    required = ['inclusiveLeptons']
+    required = ['LNuJJ']
 )
 
 
@@ -28,16 +22,12 @@ vvTreeProducer = cfg.Analyzer(
         NTupleVariable("nLL",lambda ev: len(ev.LL) , int),       
         NTupleVariable("nLNu",lambda ev: len(ev.LNu) , int),       
      ],
-     globalObjects =  {
-            "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
-     },
-
+#     globalObjects = susyMultilepton_globalObjects,
      collections = {
 #            "genleps"          : NTupleCollection("gen",     genParticleWithLinksType, 10, help="Generated leptons (e/mu) from W/Z decays"),                                                                                                
 #            "inclusiveLeptons" : NTupleCollection("l",    leptonTypeExtra, 10, help="Inclusive Leptons"),                                                                                                
-        "LNuJJ" : NTupleCollection("lnujj",LNuJJType ,5, help="VV candidate with a lepton neutrino and a fat jet"),                                                   
-        "JJ" : NTupleCollection("jj",JJType ,5, help="VV candidate with two fat jets"),                                       
-        "LLJJ" : NTupleCollection("lljj",LLJJType ,5, help="VV candidate with two leptons and a fat jet")                                       
+            "LNuJJ" : NTupleCollection("lnujj",LNuJJType ,5, help="VV candidate with a lepton neutrino and a fat jet")                                                                                                
+#            "LNuJJCA" : NTupleCollection("lnujjca",LNuJJType ,5, help="VV candidate with a lepton neutrino and a fat jet"),                                                                                                
 #            "genVBosons" : NTupleCollection("genV",     genParticleWithLinksType, 10, help="Generated V bosons"),                                                                                                
      }
 )

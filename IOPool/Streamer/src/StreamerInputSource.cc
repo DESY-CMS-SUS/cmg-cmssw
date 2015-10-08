@@ -236,13 +236,7 @@ namespace edm {
     xbuf_.SetBuffer(&dest_[0],dest_size,kFALSE);
     RootDebug tracer(10,10);
 
-    //We do not yet know which EventPrincipal we will use, therefore
-    // we are using a new EventPrincipalHolder as a proxy. We need to
-    // make a new one instead of reusing the same one becuase when running
-    // multi-threaded there will be multiple EventPrincipals being used
-    // simultaneously.
-    eventPrincipalHolder_.reset( new EventPrincipalHolder() );
-    setRefCoreStreamer(eventPrincipalHolder_.get());
+    setRefCoreStreamer(&eventPrincipalHolder_);
     sendEvent_ = std::unique_ptr<SendEvent>((SendEvent*)xbuf_.ReadObjectAny(tc_));
     setRefCoreStreamer();
 
@@ -280,14 +274,7 @@ namespace edm {
     BranchListIndexes indexes(sendEvent_->branchListIndexes());
     branchIDListHelper()->fixBranchListIndexes(indexes);
     eventPrincipal.fillEventPrincipal(sendEvent_->aux(), processHistoryRegistry(), std::move(ids), std::move(indexes));
-
-    //We now know which eventPrincipal to use and we can reuse the slot in
-    // streamToEventPrincipalHolders to own the memory
-    eventPrincipalHolder_->setEventPrincipal(&eventPrincipal);
-    if(streamToEventPrincipalHolders_.size() < eventPrincipal.streamID().value() +1) {
-      streamToEventPrincipalHolders_.resize(eventPrincipal.streamID().value() +1);
-    }
-    streamToEventPrincipalHolders_[eventPrincipal.streamID().value()] = std::move(eventPrincipalHolder_);
+    eventPrincipalHolder_.setEventPrincipal(&eventPrincipal);
 
     // no process name list handling
 

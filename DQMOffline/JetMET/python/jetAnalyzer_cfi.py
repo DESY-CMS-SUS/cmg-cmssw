@@ -59,9 +59,9 @@ jetDQMAnalyzerAk4CaloUncleaned = cms.EDAnalyzer("JetAnalyzer",
     JetIDVersion               = cms.string("PURE09"),
     #
     #actually done only for PFJets at the moment
-    InputMVAPUIDDiscriminant = cms.InputTag("pileupJetIdEvaluatorDQM","fullDiscriminant"),
+    InputMVAPUIDDiscriminant = cms.InputTag("pileupJetIdEvaluatorDQM","full53xDiscriminant"),
     InputCutPUIDDiscriminant = cms.InputTag("pileupJetIdEvaluatorDQM","cutbasedDiscriminant"),
-    InputMVAPUIDValue = cms.InputTag("pileupJetIdEvaluatorDQM","fullId"),
+    InputMVAPUIDValue = cms.InputTag("pileupJetIdEvaluatorDQM","full53xId"),
     InputCutPUIDValue = cms.InputTag("pileupJetIdEvaluatorDQM","cutbasedId"),
 
     InputQGMultiplicity = cms.InputTag("QGTagger", "mult"),

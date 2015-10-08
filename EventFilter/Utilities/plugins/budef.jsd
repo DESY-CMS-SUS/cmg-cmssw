@@ -3,11 +3,6 @@
       {
          "name" : "NEvents",
          "operation" : "sum"
-      },
-      {
-         "name" : "NBytes",
-         "operation" : "sum"
       }  
-
    ]
 }

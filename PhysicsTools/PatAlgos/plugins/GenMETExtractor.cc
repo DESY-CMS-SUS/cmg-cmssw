@@ -22,13 +22,10 @@ GenMETExtractor::~GenMETExtractor() {
 }
 
 
-void GenMETExtractor::produce(edm::StreamID streamID, edm::Event & iEvent,
-			      const edm::EventSetup & iSetup) const {
+void GenMETExtractor::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   edm::Handle<std::vector<pat::MET> >  src;
   iEvent.getByToken(metSrcToken_, src);
-  if(src->size()==0) edm::LogError("GenMETExtractor::produce") << "input genMET collection is empty" ;
-
   const reco::GenMET *genMet =	src->front().genMET();
   
   std::vector<reco::GenMET> *genMetCol = new std::vector<reco::GenMET>();

@@ -67,14 +67,6 @@ type0PFMEtCorrectionPFCandToVertexAssociationForValidation = cms.Sequence(
    * pfCandidateToVertexAssociation
 )
 
-
-type0PFMEtCorrectionPFCandToVertexAssociationForValidationMiniAOD = cms.Sequence(
-    selectedVerticesForPFMEtCorrType0
-   * selectedPrimaryVertexHighestPtTrackSumForPFMEtCorrType0
-   * particleFlowDisplacedVertex
-   * pfCandidateToVertexAssociation
-)
-
 type0PFMEtCorrection = cms.Sequence(
     type0PFMEtCorrectionPFCandToVertexAssociation
    * pfMETcorrType0

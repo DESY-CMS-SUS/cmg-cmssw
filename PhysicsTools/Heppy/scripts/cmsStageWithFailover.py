@@ -5,7 +5,6 @@
 if __name__ == '__main__':
 
     import PhysicsTools.HeppyCore.utils.eostools as eostools
-
     eostools.setCAFPath()
 
     from cmsIO import *

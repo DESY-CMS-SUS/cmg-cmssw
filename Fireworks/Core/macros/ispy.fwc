@@ -5,7 +5,7 @@
      <string>std::vector&lt;reco::PFJet&gt;</string>
    </config>
    <config name="moduleLabel" version="0">
-     <string>ak4PFJetsCHS</string>
+     <string>ak4PFJets</string>
    </config>
    <config name="productInstanceLabel" version="0">
      <string></string>
@@ -92,7 +92,7 @@
      <string>std::vector&lt;reco::GsfElectron&gt;</string>
    </config>
    <config name="moduleLabel" version="0">
-     <string>gedGsfElectrons</string>
+     <string>gsfElectrons</string>
    </config>
    <config name="productInstanceLabel" version="0">
      <string></string>
@@ -205,10 +205,10 @@
   </config>
   <config name="MET" version="3">
    <config name="type" version="0">
-     <string>std::vector&lt;reco::PFMET&gt;</string>
+     <string>std::vector&lt;reco::MET&gt;</string>
    </config>
    <config name="moduleLabel" version="0">
-     <string>pfMet</string>
+     <string>tcMet</string>
    </config>
    <config name="productInstanceLabel" version="0">
      <string></string>

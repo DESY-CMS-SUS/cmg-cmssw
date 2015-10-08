@@ -1,23 +1,23 @@
 import FWCore.ParameterSet.Config as cms
 
 #Hotline skim parameters
-singleMuonCut = 600
+singleMuonCut = 500
 doubleMuonCut = 300
-tripleMuonCut = 150
-singleElectronCut = 900
+tripleMuonCut = 100
+singleElectronCut = 500
 doubleElectronCut = 300
 tripleElectronCut = 100
-singlePhotonCut = 1200
-doublePhotonCut = 700
-triplePhotonCut = 300
-singleJetCut = 1600
-doubleJetCut = 1400
+singlePhotonCut = 800
+doublePhotonCut = 400
+triplePhotonCut = 200
+singleJetCut = 1500
+doubleJetCut = 500
 multiJetCut = 100
 multiJetNJets = 8
 htCut = 4000
-dimuonMassCut = 800
-dielectronMassCut = 800
-diEMuMassCut = 800
+dimuonMassCut = 500
+dielectronMassCut = 500
+diEMuMassCut = 500
 
 #MET hotline skim parameters
 pfMetCut = 300
@@ -27,33 +27,18 @@ condCaloMetCut = 100 #Calo MET cut for large PF/Calo skim
 caloOverPFRatioCut = 2 #cut on Calo MET / PF MET
 PFOverCaloRatioCut = 2 #cut on PF MET / Calo MET
 
-## select events with at least one good PV
-pvFilterHotLine = cms.EDFilter(
-    "VertexSelector",
-    src = cms.InputTag("offlinePrimaryVertices"),
-    cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
-    filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex collection.
-)
-
-## apply HBHE Noise filter
-from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import HBHENoiseFilter
-from CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi import HBHENoiseFilterResultProducer
-
-#CSC beam halo filter
-from RecoMET.METFilters.CSCTightHaloFilter_cfi import *
-
 #one muon
 singleMuonSelector = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag("muons"),
-    cut = cms.string( "isGlobalMuon() & pt() > "+str(singleMuonCut) )
+    cut = cms.string( "pt() > "+str(singleMuonCut) )
 )
 singleMuonFilter = cms.EDFilter(
     "CandViewCountFilter",
     src = cms.InputTag("singleMuonSelector"),
     minNumber = cms.uint32(1)
 )
-seqHotlineSkimSingleMuon = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * singleMuonSelector * singleMuonFilter)
+seqHotlineSkimSingleMuon = cms.Sequence(singleMuonSelector * singleMuonFilter)
 
 #two muons
 doubleMuonSelector = cms.EDFilter(
@@ -66,7 +51,7 @@ doubleMuonFilter = cms.EDFilter(
     src = cms.InputTag("doubleMuonSelector"),
     minNumber = cms.uint32(2)
 )
-seqHotlineSkimDoubleMuon = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * doubleMuonSelector * doubleMuonFilter)
+seqHotlineSkimDoubleMuon = cms.Sequence(doubleMuonSelector * doubleMuonFilter)
 
 #three muons
 tripleMuonSelector = cms.EDFilter(
@@ -79,7 +64,7 @@ tripleMuonFilter = cms.EDFilter(
     src = cms.InputTag("tripleMuonSelector"),
     minNumber = cms.uint32(3)
 )
-seqHotlineSkimTripleMuon = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * tripleMuonSelector * tripleMuonFilter)
+seqHotlineSkimTripleMuon = cms.Sequence(tripleMuonSelector * tripleMuonFilter)
 
 #one electron
 singleElectronSelector = cms.EDFilter(
@@ -92,7 +77,7 @@ singleElectronFilter = cms.EDFilter(
     src = cms.InputTag("singleElectronSelector"),
     minNumber = cms.uint32(1)
 )
-seqHotlineSkimSingleElectron = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * singleElectronSelector * singleElectronFilter)
+seqHotlineSkimSingleElectron = cms.Sequence(singleElectronSelector * singleElectronFilter)
 
 #two electrons
 doubleElectronSelector = cms.EDFilter(
@@ -105,7 +90,7 @@ doubleElectronFilter = cms.EDFilter(
     src = cms.InputTag("doubleElectronSelector"),
     minNumber = cms.uint32(2)
 )
-seqHotlineSkimDoubleElectron = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * doubleElectronSelector * doubleElectronFilter)
+seqHotlineSkimDoubleElectron = cms.Sequence(doubleElectronSelector * doubleElectronFilter)
 
 #three electrons
 tripleElectronSelector = cms.EDFilter(
@@ -118,7 +103,7 @@ tripleElectronFilter = cms.EDFilter(
     src = cms.InputTag("tripleElectronSelector"),
     minNumber = cms.uint32(3)
 )
-seqHotlineSkimTripleElectron = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * tripleElectronSelector * tripleElectronFilter)
+seqHotlineSkimTripleElectron = cms.Sequence(tripleElectronSelector * tripleElectronFilter)
 
 #one photon
 singlePhotonSelector = cms.EDFilter(
@@ -131,7 +116,7 @@ singlePhotonFilter = cms.EDFilter(
     src = cms.InputTag("singlePhotonSelector"),
     minNumber = cms.uint32(1)
 )
-seqHotlineSkimSinglePhoton = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * singlePhotonSelector * singlePhotonFilter)
+seqHotlineSkimSinglePhoton = cms.Sequence(singlePhotonSelector * singlePhotonFilter)
 
 #two photons
 doublePhotonSelector = cms.EDFilter(
@@ -144,7 +129,7 @@ doublePhotonFilter = cms.EDFilter(
     src = cms.InputTag("doublePhotonSelector"),
     minNumber = cms.uint32(2)
 )
-seqHotlineSkimDoublePhoton = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * doublePhotonSelector * doublePhotonFilter)
+seqHotlineSkimDoublePhoton = cms.Sequence(doublePhotonSelector * doublePhotonFilter)
 
 #three photons
 triplePhotonSelector = cms.EDFilter(
@@ -157,7 +142,7 @@ triplePhotonFilter = cms.EDFilter(
     src = cms.InputTag("triplePhotonSelector"),
     minNumber = cms.uint32(3)
 )
-seqHotlineSkimTriplePhoton = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * triplePhotonSelector * triplePhotonFilter)
+seqHotlineSkimTriplePhoton = cms.Sequence(triplePhotonSelector * triplePhotonFilter)
 
 #one jet
 singleJetSelector = cms.EDFilter(
@@ -170,7 +155,7 @@ singleJetFilter = cms.EDFilter(
     src = cms.InputTag("singleJetSelector"),
     minNumber = cms.uint32(1)
 )
-seqHotlineSkimSingleJet = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * singleJetSelector * singleJetFilter)
+seqHotlineSkimSingleJet = cms.Sequence(singleJetSelector * singleJetFilter)
 
 #two jets
 doubleJetSelector = cms.EDFilter(
@@ -183,7 +168,7 @@ doubleJetFilter = cms.EDFilter(
     src = cms.InputTag("doubleJetSelector"),
     minNumber = cms.uint32(2)
 )
-seqHotlineSkimDoubleJet = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * doubleJetSelector * doubleJetFilter)
+seqHotlineSkimDoubleJet = cms.Sequence(doubleJetSelector * doubleJetFilter)
 
 #many jets
 multiJetSelector = cms.EDFilter(
@@ -196,7 +181,7 @@ multiJetFilter = cms.EDFilter(
     src = cms.InputTag("multiJetSelector"),
     minNumber = cms.uint32(multiJetNJets)
 )
-seqHotlineSkimMultiJet = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * multiJetSelector * multiJetFilter)
+seqHotlineSkimMultiJet = cms.Sequence(multiJetSelector * multiJetFilter)
 
 #HT
 htMht = cms.EDProducer( "HLTHtMhtProducer",
@@ -221,30 +206,30 @@ htFilter = cms.EDFilter(
     src = cms.InputTag("htSelector"),
     minNumber = cms.uint32(1)
 )
-seqHotlineSkimHT = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * htMht * htSelector * htFilter)
+seqHotlineSkimHT = cms.Sequence(htMht * htSelector * htFilter)
 
 #high-mass dileptons
-dimuonsHotLine = cms.EDProducer(
+dimuons = cms.EDProducer(
     "CandViewShallowCloneCombiner",
     decay = cms.string("muons muons"),
     checkCharge = cms.bool(False),
-    cut = cms.string("daughter(0).pt>150 & daughter(1).pt>150 & mass > "+str(dimuonMassCut)),
+    cut = cms.string("mass > "+str(dimuonMassCut)),
 )
 dielectrons = cms.EDProducer(
     "CandViewShallowCloneCombiner",
     decay = cms.string("gedGsfElectrons gedGsfElectrons"),
     checkCharge = cms.bool(False),
-    cut = cms.string("daughter(0).pt>150 & daughter(1).pt>150 & mass > "+str(dielectronMassCut)),
+    cut = cms.string("mass > "+str(dielectronMassCut)),
 )
 diEMu = cms.EDProducer(
     "CandViewShallowCloneCombiner",
     decay = cms.string("muons gedGsfElectrons"),
     checkCharge = cms.bool(False),
-    cut = cms.string("daughter(0).pt>150 & daughter(1).pt>150 & mass > "+str(diEMuMassCut)),
+    cut = cms.string("mass > "+str(diEMuMassCut)),
 )
 dimuonMassFilter = cms.EDFilter(
     "CandViewCountFilter",
-    src = cms.InputTag("dimuonsHotLine"),
+    src = cms.InputTag("dimuons"),
     minNumber = cms.uint32(1)
 )
 dielectronMassFilter = cms.EDFilter(
@@ -258,72 +243,81 @@ diEMuMassFilter = cms.EDFilter(
     minNumber = cms.uint32(1)
 )
 
-seqHotlineSkimMassiveDimuon = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * dimuonsHotLine * dimuonMassFilter)
-seqHotlineSkimMassiveDielectron = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * dielectrons * dielectronMassFilter)
-seqHotlineSkimMassiveEMu = cms.Sequence(pvFilterHotLine * CSCTightHaloFilter * HBHENoiseFilterResultProducer * HBHENoiseFilter * diEMu * diEMuMassFilter)
+seqHotlineSkimMassiveDimuon = cms.Sequence(dimuons * dimuonMassFilter)
+seqHotlineSkimMassiveDielectron = cms.Sequence(dielectrons * dielectronMassFilter)
+seqHotlineSkimMassiveEMu = cms.Sequence(diEMu * diEMuMassFilter)
+
+## select events with at least one good PV
+pvFilter = cms.EDFilter(
+    "VertexSelector",
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
+    filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex collection.
+)
+
+## apply HBHE Noise filter
+from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import HBHENoiseFilter
+from CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi import HBHENoiseFilterResultProducer
 
 ## select events with high pfMET
-pfMETSelectorHotLine = cms.EDFilter(
+pfMETSelector = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag("pfMet"),
     cut = cms.string( "pt()>"+str(pfMetCut) )
 )
 
-pfMETCounterHotLine = cms.EDFilter(
+pfMETCounter = cms.EDFilter(
     "CandViewCountFilter",
-    src = cms.InputTag("pfMETSelectorHotLine"),
+    src = cms.InputTag("pfMETSelector"),
     minNumber = cms.uint32(1),
 )
 
 seqHotlineSkimPFMET = cms.Sequence(
-   pvFilterHotLine*
-   CSCTightHaloFilter*
+   pvFilter*
    HBHENoiseFilterResultProducer*
    HBHENoiseFilter*
-   pfMETSelectorHotLine*
-   pfMETCounterHotLine
+   pfMETSelector*
+   pfMETCounter
 )
 
 ## select events with high caloMET
-caloMETSelectorHotLine = cms.EDFilter(
+caloMETSelector = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag("caloMetM"),
     cut = cms.string( "pt()>"+str(caloMetCut) )
 )
 
-caloMETCounterHotLine = cms.EDFilter(
+caloMETCounter = cms.EDFilter(
     "CandViewCountFilter",
-    src = cms.InputTag("caloMETSelectorHotLine"),
+    src = cms.InputTag("caloMETSelector"),
     minNumber = cms.uint32(1),
 )
 
 seqHotlineSkimCaloMET = cms.Sequence(
-   pvFilterHotLine*
-   CSCTightHaloFilter*
+   pvFilter*
    HBHENoiseFilterResultProducer*
    HBHENoiseFilter*
-   caloMETSelectorHotLine*
-   caloMETCounterHotLine
+   caloMETSelector*
+   caloMETCounter
 )
 
 ## select events with extreme PFMET/CaloMET ratio
-CondMETSelectorHotLine = cms.EDProducer(
+CondMETSelector = cms.EDProducer(
    "CandViewShallowCloneCombiner",
    decay = cms.string("pfMet caloMetM"),
    cut = cms.string("(daughter(0).pt/daughter(1).pt > "+str(PFOverCaloRatioCut)+" && daughter(1).pt > "+str(condCaloMetCut)+") || (daughter(1).pt/daughter(0).pt > "+str(caloOverPFRatioCut)+" && daughter(0).pt > "+str(condPFMetCut)+" )  " )
 )
 
-CondMETCounterHotLine = cms.EDFilter(
+CondMETCounter = cms.EDFilter(
     "CandViewCountFilter",
-    src = cms.InputTag("CondMETSelectorHotLine"),
+    src = cms.InputTag("CondMETSelector"),
     minNumber = cms.uint32(1),
 )
 
 seqHotlineSkimCondMET = cms.Sequence(
-   pvFilterHotLine*
-   CSCTightHaloFilter*
+   pvFilter*
    HBHENoiseFilterResultProducer*
    HBHENoiseFilter*
-   CondMETSelectorHotLine*
-   CondMETCounterHotLine
+   CondMETSelector*
+   CondMETCounter
 )

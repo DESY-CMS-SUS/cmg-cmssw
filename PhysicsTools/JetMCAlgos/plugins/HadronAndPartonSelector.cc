@@ -118,8 +118,7 @@ HadronAndPartonSelector::HadronAndPartonSelector(const edm::ParameterSet& iConfi
    //register your products
    produces<reco::GenParticleRefVector>( "bHadrons" );
    produces<reco::GenParticleRefVector>( "cHadrons" );
-   produces<reco::GenParticleRefVector>( "algorithmicPartons" );
-   produces<reco::GenParticleRefVector>( "physicsPartons" );
+   produces<reco::GenParticleRefVector>( "partons" );
    produces<reco::GenParticleRefVector>( "leptons" );
 }
 
@@ -207,7 +206,6 @@ HadronAndPartonSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSet
    std::auto_ptr<reco::GenParticleRefVector> bHadrons ( new reco::GenParticleRefVector );
    std::auto_ptr<reco::GenParticleRefVector> cHadrons ( new reco::GenParticleRefVector );
    std::auto_ptr<reco::GenParticleRefVector> partons  ( new reco::GenParticleRefVector );
-   std::auto_ptr<reco::GenParticleRefVector> physicsPartons  ( new reco::GenParticleRefVector );
    std::auto_ptr<reco::GenParticleRefVector> leptons  ( new reco::GenParticleRefVector );
 
    // loop over particles and select b and c hadrons and leptons
@@ -251,20 +249,12 @@ HadronAndPartonSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSet
    }
 
    // select partons
-   if ( partonMode_!="Undefined" ) {
+   if ( partonMode_!="Undefined" )
      partonSelector_->run(particles,partons);
-     for(reco::GenParticleCollection::const_iterator it = particles->begin(); it != particles->end(); ++it)
-     {
-       if( !(it->status()==3 || (( partonMode_=="Pythia8" ) && (it->status()==23)))) continue;
-       if( !CandMCTagUtils::isParton( *it ) ) continue;  // skip particle if not a parton
-       physicsPartons->push_back( reco::GenParticleRef( particles, it - particles->begin() ) );
-     }
-   }
 
    iEvent.put( bHadrons, "bHadrons" );
    iEvent.put( cHadrons, "cHadrons" );
-   iEvent.put( partons,  "algorithmicPartons" );
-   iEvent.put( physicsPartons,  "physicsPartons" );
+   iEvent.put( partons,  "partons" );
    iEvent.put( leptons,  "leptons" );
 }
 

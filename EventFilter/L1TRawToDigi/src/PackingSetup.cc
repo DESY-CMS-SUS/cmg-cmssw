@@ -18,12 +18,4 @@ namespace l1t {
 
       return helper;
    }
-
-   void
-   PackingSetupFactory::fillDescription(edm::ParameterSetDescription& desc) const
-   {
-      for (const auto& info: PackingSetupFactoryT::get()->available()) {
-         PackingSetupFactoryT::get()->create(info.name_)->fillDescription(desc);
-      }
-   }
 }

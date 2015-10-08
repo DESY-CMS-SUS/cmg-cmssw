@@ -93,7 +93,6 @@ public:
   void fillStripDQMHistograms();
 
   long double prob_;
-  long double ratio_;
   unsigned short MinNumEntries_;
   unsigned short MinNumEntriesPerStrip_;
   long double lowoccupancy_;
@@ -194,8 +193,6 @@ public:
   int hotStripsPerModule;
   double singleStripOccupancy;
   int stripHits;
-  double medianAPVHits;
-  double avgAPVHits;
   double poissonProb;
 
   int ishot[128];
@@ -204,8 +201,6 @@ public:
   double stripoccupancy[128];
   int striphits[128];
   double poissonprob[128];
-  double medianapvhits[6];
-  double avgapvhits[6];
 
   std::stringstream ss;
 

@@ -113,7 +113,7 @@ class OfflineValidation(GenericValidationData):
 
         parameters = "root://eoscms//eos/cms" + ",root://eoscms//eos/cms".join(repMap["resultFiles"])
 
-        mergedoutputfile = "root://eoscms//eos/cms%(finalResultFile)s"%repMap
+        mergedoutputfile = "root://eoscms//eos/cms.oO[finalResultFile]Oo."
         validationsSoFar += ('root -x -b -q -l "TkAlOfflineJobsMerge.C(\\\"'
                              +parameters+'\\\",\\\"'+mergedoutputfile+'\\\")"'
                              +"\n")

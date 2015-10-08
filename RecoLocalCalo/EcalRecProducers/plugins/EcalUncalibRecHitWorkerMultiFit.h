@@ -82,7 +82,6 @@ class EcalUncalibRecHitWorkerMultiFit : public EcalUncalibRecHitWorkerBaseClass 
                 bool useLumiInfoRunHeader_;
                 EcalUncalibRecHitMultiFitAlgo multiFitMethod_;
                 
-		int bunchSpacingManual_;
                 edm::EDGetTokenT<int> bunchSpacing_; 
 
                 // determine which of the samples must actually be used by ECAL local reco

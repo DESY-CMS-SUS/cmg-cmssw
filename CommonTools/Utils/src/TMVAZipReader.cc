@@ -54,11 +54,8 @@ char* reco::details::readGzipFile(const std::string& weightFile)
   return buffer;
 }
 
-TMVA::IMethod* reco::details::loadTMVAWeights(TMVA::Reader* reader, const std::string& method,
+void reco::details::loadTMVAWeights(TMVA::Reader* reader, const std::string& method,
     const std::string& weightFile, bool verbose) {
-
-  TMVA::IMethod* ptr = nullptr;
-
   verbose = false;
   if (verbose)
     std::cout << "Booking TMVA Reader with " << method << " and weight file: " << weightFile
@@ -68,7 +65,7 @@ TMVA::IMethod* reco::details::loadTMVAWeights(TMVA::Reader* reader, const std::s
     if (verbose)
       std::cout << "Weight file is pure xml." << std::endl;
     // Let TMVA read the file
-    ptr = reader->BookMVA(method, weightFile);
+    reader->BookMVA(method, weightFile);
   } else if (reco::details::hasEnding(weightFile, ".gz") || reco::details::hasEnding(weightFile, ".gzip")) {
     if (verbose)
       std::cout << "Unzipping file." << std::endl;
@@ -89,7 +86,7 @@ TMVA::IMethod* reco::details::loadTMVAWeights(TMVA::Reader* reader, const std::s
     close(fdToUselessFile);
     if (verbose)
       std::cout << "Booking MvA" << std::endl;
-    ptr = reader->BookMVA(method, weight_file_name);
+    reader->BookMVA(method, weight_file_name);
     if (verbose)
       std::cout << "Cleaning up" << std::endl;
     remove(weight_file_name.c_str());
@@ -106,6 +103,4 @@ TMVA::IMethod* reco::details::loadTMVAWeights(TMVA::Reader* reader, const std::s
       << "I don't understand the extension on the filename: "
       << weightFile << ", it should be .xml, .gz, or .gzip" << std::endl;
   }
-
-  return ptr;
 }

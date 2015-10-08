@@ -8,7 +8,6 @@
 #include "TrackPlots.h"
 #include "SeedMultiplicityPlots.h"
 #include "OOTMultiplicityPlotMacros.h"
-#include "BSvsBPIX.h"
 #ifdef __CINT__
 #pragma link off all functions;
 #pragma link C++ function PlotOccupancyMap;
@@ -47,5 +46,4 @@
 #pragma link C++ function ComputeOOTFractionvsFill;
 #pragma link C++ class OOTResult;
 #pragma link C++ class OOTSummary;
-#pragma link C++ function BSvsBPIX;
 #endif
