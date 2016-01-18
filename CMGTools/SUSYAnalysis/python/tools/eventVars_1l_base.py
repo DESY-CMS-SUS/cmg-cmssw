@@ -22,12 +22,17 @@ eleEta = 2.4
 # Jets
 ###########
 
-corrJEC = "central" # can be "central","up","down
-#corrJEC = "down" # can be "central","up","down
+corrJEC = "central" # can be "central","up","down"
+#corrJEC = "down" # can be "central","up","down"
+
+smearJER = "central"# can be "None","central","up","down"
+JERAllowedValues = ["None","central","up","down"]
+assert any(val==smearJER for val in JERAllowedValues)
+
 
 print
 print 30*'#'
-print 'Going to use', corrJEC , 'JEC!'
+print 'Going to use', corrJEC , 'JEC and', smearJER, 'JER!'
 print 30*'#'
 
 def recalcMET(metp4, oldjets, newjets):
@@ -42,7 +47,7 @@ def recalcMET(metp4, oldjets, newjets):
 
     return (metp4 - deltaJetP4)
 
-def getRecalcMET(metp4, event, corrJEC = "central"):
+def getRecalcMET(metp4, event, corrJEC = "central", smearJER = "None"):
     ## newMETp4 = oldMETp4 - (Sum(oldJetsP4) - Sum(newJetsP4))
 
     # don't du anything for data
@@ -63,6 +68,8 @@ def getRecalcMET(metp4, event, corrJEC = "central"):
         for jet in newjets: jet.pt = jet.rawPt * jet.corr*jet.corr_JECUp
     elif corrJEC == "down":
         for jet in newjets: jet.pt = jet.rawPt * jet.corr*jet.corr_JECDown
+    if smearJER!= "None":
+        for jet in newjets: jet.pt = returnJERSmearedPt(jet.pt,abs(jet.eta),jet.mcPt,smearJER)
 
     # vectorial summ of jets
     deltaJetP4 = ROOT.TLorentzVector(0,0,0,0)
@@ -71,6 +78,29 @@ def getRecalcMET(metp4, event, corrJEC = "central"):
     for jet in newjets: deltaJetP4 -= jet.p4()
 
     return (metp4 - deltaJetP4)
+
+def returnJERSmearFactor(aeta, shiftJER):
+    # from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+    #13 TeV tables
+           
+    factor = 1.061 + shiftJER*0.023
+    if   aeta > 3.2: factor = 1.320 + shiftJER * 0.286
+    elif aeta > 3.0: factor = 1.303 + shiftJER * 0.111
+    elif aeta > 2.5: factor = 1.343 + shiftJER * 0.123
+    elif aeta > 1.9: factor = 1.126 + shiftJER * 0.094
+    elif aeta > 1.3: factor = 1.106 + shiftJER * 0.030
+    elif aeta > 0.8: factor = 1.088 + shiftJER * 0.029
+    
+    return factor
+
+def returnJERSmearedPt(jetpt,aeta,genpt,smearJER):
+    if genpt==0: return jetpt
+#    assert (any(val==smearJER for val in JERAllowedValues) and smearJER!="None")
+    shiftJER=0
+    if   smearJER=="up"  : shiftJER = +1
+    elif smearJER=="down": shiftJER = -1
+    ptscale = max(0.0, (jetpt + (returnJERSmearFactor(aeta, shiftJER)-1)*(jetpt-genpt))/jetpt)
+    return jetpt*ptscale
 
 ## B tag Working points
 ## CSV (v1 -- Run1) WPs
@@ -584,6 +614,9 @@ class EventVars1L_base:
                 for jet in jets: jet.pt = jet.rawPt * jet.corr*jet.corr_JECUp
             elif corrJEC == "down":
                 for jet in jets: jet.pt = jet.rawPt * jet.corr*jet.corr_JECDown
+            if smearJER!= "None":
+                for jet in jets: jet.pt = returnJERSmearedPt(jet.pt,abs(jet.eta),jet.mcPt,smearJER)
+                    
 
         centralJet30 = []; centralJet30idx = []
         centralJet40 = []
@@ -687,11 +720,11 @@ class EventVars1L_base:
         metp4.SetPtEtaPhiM(event.met_pt,event.met_eta,event.met_phi,event.met_mass)
 
         # recalc MET
-        if corrJEC != "central":
+        if corrJEC != "central" or smearJER!= "None":
             ## get original jet collection
             # oldjets = [j for j in Collection(event,"Jet","nJet")]
             # metp4 = recalcMET(metp4,oldjets,jets)
-            metp4 = getRecalcMET(metp4,event,corrJEC)
+            metp4 = getRecalcMET(metp4,event,corrJEC,smearJER)
 
         ret["MET"] = metp4.Pt()
 
